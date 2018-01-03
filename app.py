@@ -18,6 +18,14 @@ app.config['DEBUG'] = True
 def index():
     return render_template('index.html')
 
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+@app.route('/valves')
+def valves():
+    return render_template('valves.html')
+
 if __name__ == '__main__':  # Script executed directly?
     app.run(host='0.0.0.0', port=80)  # Launch built-in web server and run this Flask webapp
     
