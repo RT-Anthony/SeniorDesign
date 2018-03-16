@@ -30,11 +30,12 @@ if __name__ == '__main__':  # Script executed directly?
     #define port number via cmd-line arguments
     #checks for -p as first argument, and presence of a number as the second
     #argument
-    if sys.argv[1] == '-p' and sys.argv[2]:
-        try:
-            srvport = int(sys.argv[2])
-        except:
-            srvport = 80
+    if len(sys.argv) > 2:
+        if sys.argv[1] == '-p':
+            try:
+                srvport = int(sys.argv[2])
+            except:
+                srvport = 80
     else:
         srvport = 80
 
