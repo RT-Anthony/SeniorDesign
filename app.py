@@ -26,6 +26,9 @@ def settings():
 def valves():
     return render_template('valves.html')
 
+@app.route('/update/<device>/<flow>')
+def update(device, flow):
+    pass
+
 if __name__ == '__main__':  # Script executed directly?
     app.run(host='0.0.0.0', port=80)  # Launch built-in web server and run this Flask webapp
-    
