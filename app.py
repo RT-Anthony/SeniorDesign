@@ -26,6 +26,10 @@ def settings():
 def valves():
     return render_template('valves.html')
 
+@app.route('/update/<device>/<flow>')
+def update(device, flow):
+    pass
+
 if __name__ == '__main__':  # Script executed directly?
     #define port number via cmd-line arguments
     #checks for -p as first argument, and presence of a number as the second
