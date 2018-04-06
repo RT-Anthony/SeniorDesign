@@ -31,4 +31,16 @@ def update(device, flow):
     pass
 
 if __name__ == '__main__':  # Script executed directly?
-    app.run(host='0.0.0.0', port=80)  # Launch built-in web server and run this Flask webapp
+    #define port number via cmd-line arguments
+    #checks for -p as first argument, and presence of a number as the second
+    #argument
+    if len(sys.argv) > 2:
+        if sys.argv[1] == '-p':
+            try:
+                srvport = int(sys.argv[2])
+            except:
+                srvport = 80
+    else:
+        srvport = 80
+
+    app.run(host='0.0.0.0', port=srvport)  # Launch built-in web server and run this Flask webapp
