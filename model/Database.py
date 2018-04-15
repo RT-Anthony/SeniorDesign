@@ -8,6 +8,12 @@ from sqlalchemy.ext.declarative.api import declarative_base
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from model.Device import Device
+from model.MinuteData import MinuteData
+from model.HourData import HourData
+from model.DailyData import DailyData
+from model.Notification import Notification
+
 class Database(object):
     '''
     The Database class is a convenience class for
@@ -15,7 +21,7 @@ class Database(object):
     '''
 
 
-    def __init__(self, params):
+    def __init__(self, params=None):
         '''
         Constructor
         Establishes session to sqlite database
@@ -28,8 +34,14 @@ class Database(object):
         Base.metadata.create_all(self.engine)
         self.s = self.session()
 
-    def add_minute_data(self, flow=0):
-        pass
+    def add_minute_data(self, device, flow=0):
+        self.s.add(MinuteData(device, flow))
+        self.update_hourly_data(device)
+        self.update_daily_data(device)
+        self.s.commit()
+
+    def add_notification(self, device, message):
+        self.s.add(Notification(device, message))
 
     def update_hourly_data(self):
         pass
@@ -42,3 +54,6 @@ class Database(object):
 
     def remove_device(self, name):
         pass
+
+    def close(self):
+        self.s.close()

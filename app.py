@@ -1,3 +1,8 @@
+'''
+Created on Feb 21, 2018
+
+@author: Anthony Bell
+'''
 from flask import Flask, request, render_template, redirect, flash, send_from_directory, make_response
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user
@@ -7,6 +12,8 @@ import smtplib
 import os
 import sys
 import datetime
+
+from model.Database import Database
 
 app = Flask(__name__)    # Construct an instance of Flask class
 bootstrap = Bootstrap(app)
@@ -28,7 +35,20 @@ def valves():
 
 @app.route('/update/<device>/<flow>')
 def update(device, flow):
-    pass
+    db.add_minute_data(device, flow)
+    #TODO UPDATE THE RETURN FOR THIS PART
+    return("PLACEHOLDER")
+
+@app.route('/notify/<device>/<message>')
+def notify(device, message):
+    db.add_notification(device, message)
+    #TODO UPDAT THE RETURN FOR THIS PART
+    return('PLACEHOLDER')
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    '''Closes Database on shutdown for data integrity'''
+    db.close()
 
 if __name__ == '__main__':  # Script executed directly?
     #define port number via cmd-line arguments
@@ -42,5 +62,7 @@ if __name__ == '__main__':  # Script executed directly?
                 srvport = 80
     else:
         srvport = 80
+
+    db = Database()
 
     app.run(host='0.0.0.0', port=srvport)  # Launch built-in web server and run this Flask webapp

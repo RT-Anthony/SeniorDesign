@@ -3,6 +3,9 @@ Created on Feb 21, 2018
 
 @author: Anthony Bell
 '''
+from sqlalchemy.ext.declarative.api import declarative_base
+from sqlalchemy import Column, Integer, Text, DateTime
+import datetime
 
 class Notification(object):
     '''
@@ -16,7 +19,12 @@ class Notification(object):
     timestamp = Column(DateTime)
     message = Column(Text)
 
-    def __init__(self, params):
+    def __init__(self, device, message):
         '''
         Constructor
         '''
+        self.id = Notification.stored_id + 1
+        Notification.stored_id += 1
+        self.device = device
+        self.message = message
+        self.timestamp = datetime.datetime.now()
