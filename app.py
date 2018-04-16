@@ -23,24 +23,39 @@ app.config['DEBUG'] = True
 
 @app.route('/')
 def index():
+    '''
+    UI Dashboard/Homepage
+    '''
     return render_template('index.html')
 
 @app.route('/settings')
 def settings():
+    '''
+    Interface for managing max flow rates for devices
+    '''
     return render_template('settings.html')
 
 @app.route('/valves')
 def valves():
+    '''
+    Interface for user valve management
+    '''
     return render_template('valves.html')
 
 @app.route('/update/<device>/<flow>')
 def update(device, flow):
+    '''
+    Interface for recieving flow data from devices
+    '''
     db.add_minute_data(device, flow)
     #TODO UPDATE THE RETURN FOR THIS PART
     return("PLACEHOLDER")
 
 @app.route('/notify/<device>/<message>')
 def notify(device, message):
+    '''
+    Interface for recieving notifications from devices
+    '''
     db.add_notification(device, message)
     #TODO UPDAT THE RETURN FOR THIS PART
     return('PLACEHOLDER')

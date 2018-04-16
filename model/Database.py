@@ -25,6 +25,12 @@ class Database(object):
         '''
         Constructor
         Establishes session to sqlite database
+
+        Args:
+            None
+
+        Returns:
+            Database object
         '''
         Base = declarative_base()
         basedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
@@ -35,25 +41,72 @@ class Database(object):
         self.s = self.session()
 
     def add_minute_data(self, device, flow=0):
+        '''
+        Adds minute flow data to the database and updates hourly and daily data
+
+        Args:
+            device (str): device for which data is being logged
+            flow (int): Flow data for the device (default = 0)
+
+        Returns:
+            None
+        '''
         self.s.add(MinuteData(device, flow))
         self.update_hourly_data(device)
         self.update_daily_data(device)
         self.s.commit()
 
     def add_notification(self, device, message):
+        '''
+        Adds a notification to the database
+
+        Args:
+            device (str): device for which notification is being logged
+            message (str): notification message
+
+        Returns:
+            None
+        '''
         self.s.add(Notification(device, message))
 
-    def update_hourly_data(self):
+    def update_hourly_data(self, device):
         pass
 
-    def update_daily_date(self):
+    def update_daily_date(self, device):
         pass
 
     def add_device(self, name):
-        pass
+        '''
+        Adds a device to the database
+
+        Args:
+            name (str): the name of the device being added
+
+        Returns:
+            None
+        '''
+        self.s.add(Device(name))
 
     def remove_device(self, name):
+        '''
+        Removes a device from the database
+
+        Args:
+            name (str): the name of the device being removed
+
+        Returns:
+            None
+        '''
         pass
 
     def close(self):
+        '''
+        Closes the database
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
         self.s.close()

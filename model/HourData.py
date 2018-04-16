@@ -9,7 +9,8 @@ import datetime
 
 Base = declarative_base()
 class HourData(Base):
-    """docstring for."""
+    """HourData:
+    Class for tracking the hourly flow data for devices"""
     stored_id = 1
     __tablename__ = 'hour_flow_data'
     id = Column(Integer, primary_key=True)
@@ -18,6 +19,16 @@ class HourData(Base):
     flow = Column(Integer)
 
     def __init__(self, device, flow):
+        """
+        Constructor
+
+        Args:
+            device (str): name of the device
+            flow (int): hourly flow for the specified device
+
+        Returns:
+            HourData object
+        """
         self.id = HourData.stored_id
         HourData.stored_id += 1
         self.device = device

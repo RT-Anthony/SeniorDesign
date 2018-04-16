@@ -9,7 +9,8 @@ import datetime
 
 Base = declarative_base()
 class DailyData(Base):
-    """docstring for."""
+    """DailyData:
+    Class for tracking the daily flow data for devices"""
     stored_id = 1
     __tablename__ = 'daily_flow_data'
     id = Column(Integer, primary_key=True)
@@ -18,6 +19,16 @@ class DailyData(Base):
     flow = Column(Integer)
 
     def __init__(self, device, flow):
+        """
+        Constructor
+
+        Args:
+            device (str): name of the device
+            flow (int): daily flow for the specified device
+
+        Returns:
+            DailyData object
+        """
         self.id = DailyData.stored_id
         DailyData.stored_id += 1
         self.device = device

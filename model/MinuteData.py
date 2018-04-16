@@ -9,14 +9,26 @@ import datetime
 
 Base = declarative_base()
 class MinuteData(Base):
-    """docstring for."""
+    """MinuteData:
+    Class for tracking the minute by minute flow data for devices"""
     stored_id = 1
     __tablename__ = 'minute_flow_data'
     id = Column(Integer, primary_key=True)
     device = Column(Text)
     day = Column(DateTime)
     flow = Column(Integer)
+
     def __init__(self, device, flow):
+        """
+        Constructor
+
+        Args:
+            device (str): name of the device
+            flow (int): minute by minute flow for the specified device
+
+        Returns:
+            MinuteData object
+        """
         self.id = MinuteData.stored_id
         MinuteData.stored_id += 1
         self.device = device

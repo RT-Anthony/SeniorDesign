@@ -10,7 +10,8 @@ import datetime
 
 Base = declarative_base()
 class Device(Base):
-    """docstring for."""
+    """Device:
+    Class for tracking individual devices and device settings"""
     stored_id = 1
     __tablename__ = 'device'
     id = Column(Integer, primary_key=True)
@@ -19,6 +20,16 @@ class Device(Base):
     status = Column(Text)
 
     def __init__(self, name, flow=1000):
+        """
+        Constructor
+
+        Args:
+            name (str): name of the device
+            flow (int): maximum flow rate per hour for the device. Default is 1000 L
+
+        Returns:
+            Device object
+        """
         self.id = Device.stored_id
         Device.stored_id += 1
         self.name = name

@@ -22,6 +22,13 @@ class Notification(object):
     def __init__(self, device, message):
         '''
         Constructor
+
+        Args:
+            device (str): name of the device
+            message (str): notification message
+
+        Returns:
+            Notification object
         '''
         self.id = Notification.stored_id + 1
         Notification.stored_id += 1
