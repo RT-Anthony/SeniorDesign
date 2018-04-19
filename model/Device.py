@@ -18,8 +18,10 @@ class Device(Base):
     device = Column(Text)
     max_flow = Column(Integer)
     status = Column(Text)
+    ip = Column(Text)
 
-    def __init__(self, name, flow=1000):
+
+    def __init__(self, name, flow=1000, ip="0.0.0.0"):
         """
         Constructor
 
@@ -35,3 +37,4 @@ class Device(Base):
         self.name = name
         self.flow = flow
         self.status = "on"
+        self.ip = ip

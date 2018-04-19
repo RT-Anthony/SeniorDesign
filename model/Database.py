@@ -40,6 +40,22 @@ class Database(object):
         Base.metadata.create_all(self.engine)
         self.s = self.session()
 
+    def set_next_id(self):
+        '''
+        Sets the stored_id values so that database collisions do not occur, call on startup
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
+        DailyData.stored_id = self.s.query(func.max(DailyData.id)) + 1
+        HourData.stored_id = self.s.query(func.max(HourData.id)) + 1
+        MinuteData.stored_id = self.s.query(func.max(MinuteData.id)) + 1
+        Device.stored_id = self.s.query(func.max(Device.id)) + 1
+        Notification.stored_id = self.s.query(func.max(Notification.id)) + 1
+
     def add_minute_data(self, device, flow=0):
         '''
         Adds minute flow data to the database and updates hourly and daily data
@@ -56,6 +72,18 @@ class Database(object):
         self.update_daily_data(device)
         self.s.commit()
 
+    def get_minute_data(self):
+        '''
+        Gets all the minute by minute data from the database
+
+        Args:
+            None
+
+        Returns:
+            list of MinuteData objects
+        '''
+        self.s.query(MinuteData)
+
     def add_notification(self, device, message):
         '''
         Adds a notification to the database
@@ -70,10 +98,45 @@ class Database(object):
         self.s.add(Notification(device, message))
 
     def update_hourly_data(self, device):
-        pass
+        past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
+        minute_entries = s.query(MinuteData).filter(MinuteData.timestamp > past_hour)
+        hourly_flow = 0
+        for entry in minute_entries:
+            hourly_flow += entry.flow
+        self.s.add(HourData(device, hourly_flow))
+
+    def get_hour_data(self):
+        '''
+        Gets all the hourly data from the database
+
+        Args:
+            None
+
+        Returns:
+            list of HourData objects
+        '''
+        self.s.query(HourData)
+
 
     def update_daily_date(self, device):
-        pass
+        past_day = datetime.datetime.now() - datetime.timedelta(days=1)
+        hour_entries = s.query(HourData).filter(HourData.timestamp > past_day)
+        daily_flow = 0
+        for entry in hour_entries:
+            daily_flow += entry.flow
+        self.s.add(DailyData(device, daily_flow))
+
+    def get_daily_data(self):
+        '''
+        Gets all the daily data from the database
+
+        Args:
+            None
+
+        Returns:
+            list of DailyData objects
+        '''
+        self.s.query(HourData)
 
     def add_device(self, name):
         '''
