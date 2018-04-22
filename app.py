@@ -51,6 +51,13 @@ def update(device, flow):
     #TODO UPDATE THE RETURN FOR THIS PART
     return("PLACEHOLDER")
 
+@app.route('/add_device/<name>')
+def add_device(name):
+    ip = str(request.remote_addr)
+    db.add_device(str(name), ip)
+    db.add_notification(name, "Device Added")
+    return('PLACEHOLDER')
+
 @app.route('/notify/<device>/<message>')
 def notify(device, message):
     '''
