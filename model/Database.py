@@ -81,6 +81,29 @@ class Database(object):
         '''
         self.s.query(HourData)
 
+    def get_current_hour(self, device):
+        '''
+        Gets the flow data for the current hour for the specified device
+
+        Args:
+            Device (str): name of the device to be queried
+
+        Returns:
+            HourData table entry for the current flow data of the device
+        '''
+        query = self.s.query(HourData).filter(HourData.device == device).order_by(desc(HourData.timestamp)).limit(1).all()
+
+    def get_current_day(self, device):
+        '''
+        Gets the flow data for the current day for the specified device
+
+        Args:
+            Device (str): name of the device to be queried
+
+        Returns:
+            DailyData table entry for the current flow data of the device
+        '''
+        query = self.s.query(DailyData).filter(DailyData.device == device).order_by(desc(DailyData.timestamp)).limit(1).all()
 
     def update_daily_date(self, device):
         past_day = datetime.datetime.now() - datetime.timedelta(days=1)
@@ -170,6 +193,9 @@ class Database(object):
         Returns:
             None
         '''
+        query = s.query(Device).fliter(Device.name == name)
+        query.delete()
+        s.commit()
         pass
 
     def close(self):
