@@ -28,18 +28,22 @@ def index():
     '''
     return render_template('index.html')
 
-@app.route('/settings')
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
     '''
     Interface for managing max flow rates for devices
     '''
+    if request.method == 'POST':
+        pass
     return render_template('settings.html')
 
-@app.route('/valves')
+@app.route('/valves', methods=['GET', 'POST'])
 def valves():
     '''
     Interface for user valve management
     '''
+    if request.method == 'POST':
+        pass
     return render_template('valves.html')
 
 @app.route('/update/<device>/<flow>')
@@ -53,6 +57,9 @@ def update(device, flow):
 
 @app.route('/add_device/<name>')
 def add_device(name):
+    '''
+    Interface for adding a device to be tracked
+    '''
     ip = str(request.remote_addr)
     db.add_device(str(name), ip)
     db.add_notification(name, "Device Added")
@@ -69,7 +76,9 @@ def notify(device, message):
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    '''Closes Database on shutdown for data integrity'''
+    '''
+    Closes Database on shutdown for data integrity
+    '''
     db.close()
 
 if __name__ == '__main__':  # Script executed directly?

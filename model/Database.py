@@ -41,34 +41,7 @@ class Database(object):
         Base.metadata.create_all(self.engine)
         self.s = self.session()
 
-    def set_next_id(self):
-        '''
-        Sets the stored_id values so that database collisions do not occur, call on startup
-
-        Args:
-            None
-
-        Returns:
-            None
-        '''
-        try:
-            DailyData.stored_id = self.s.query(func.max(DailyData.id)) + 1
-            HourData.stored_id = self.s.query(func.max(HourData.id)) + 1
-            MinuteData.stored_id = self.s.query(func.max(MinuteData.id)) + 1
-            Device.stored_id = self.s.query(func.max(Device.id)) + 1
-            Notification.stored_id = self.s.query(func.max(Notification.id)) + 1
-        except:
-            pass
-
-    def update_hourly_data(self, device):
-        past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
-        minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_hour)
-        hourly_flow = 0
-        for entry in minute_entries:
-            hourly_flow += entry.flow
-        self.s.add(HourData(device, hourly_flow))
-        self.s.commit()
-
+    #Getter functions
     def get_hour_data(self):
         '''
         Gets all the hourly data from the database
@@ -105,15 +78,6 @@ class Database(object):
         '''
         query = self.s.query(DailyData).filter(DailyData.device == device).order_by(desc(DailyData.timestamp)).limit(1).all()
 
-    def update_daily_date(self, device):
-        past_day = datetime.datetime.now() - datetime.timedelta(days=1)
-        minute_entries = s.query(MinuteData).filter(MinuteData.minute > past_day)
-        daily_flow = 0
-        for entry in minute_entries:
-            daily_flow += entry.flow
-        self.s.add(DailyData(device, daily_flow))
-        self.s.commit()
-
     def get_daily_data(self):
         '''
         Gets all the daily data from the database
@@ -125,6 +89,85 @@ class Database(object):
             list of DailyData objects
         '''
         self.s.query(HourData)
+
+    def get_minute_data(self):
+        '''
+        Gets all the minute by minute data from the database
+
+        Args:
+            None
+
+        Returns:
+            list of MinuteData objects
+        '''
+        self.s.query(MinuteData)
+
+    def get_device(self, device):
+        '''
+        Gets the device specified by the given name
+
+        Args:
+            device (str): the name of the device that is being requested
+
+        Returns:
+            Device object
+        '''
+        _device = self.s.query(Device).filter(Device.name == device).first
+        return _device
+
+
+    #Setter functions
+    def set_next_id(self):
+        '''
+        Sets the stored_id values so that database collisions do not occur, call on startup
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
+        try:
+            DailyData.stored_id = self.s.query(func.max(DailyData.id)) + 1
+            HourData.stored_id = self.s.query(func.max(HourData.id)) + 1
+            MinuteData.stored_id = self.s.query(func.max(MinuteData.id)) + 1
+            Device.stored_id = self.s.query(func.max(Device.id)) + 1
+            Notification.stored_id = self.s.query(func.max(Notification.id)) + 1
+        except:
+            pass
+
+
+    #Helper functions
+    def update_hourly_data(self, device):
+        past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
+        minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_hour)
+        hourly_flow = 0
+        for entry in minute_entries:
+            hourly_flow += entry.flow
+        self.s.add(HourData(device, hourly_flow))
+        _device = self.s.query(Device).filter(Device.name == device).first()
+        if _device.max_flow <= hourly_flow:
+            pass #Shut off valve and update db
+        self.s.commit()
+
+    def update_daily_data(self, device):
+        '''
+        Updates the database with the current flow for the past 24 hours for a given device
+
+        Args:
+            Device (str): name of the device to be updated
+
+        Returns:
+            None
+        '''
+        past_day = datetime.datetime.now() - datetime.timedelta(days=1)
+        minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_day)
+        daily_flow = 0
+        for entry in minute_entries:
+            daily_flow += entry.flow
+        self.s.add(DailyData(device, daily_flow))
+        self.s.commit()
+
 
     def add_minute_data(self, device, flow=0):
         '''
@@ -141,18 +184,6 @@ class Database(object):
         self.update_hourly_data(device)
         self.update_daily_data(device)
         self.s.commit()
-
-    def get_minute_data(self):
-        '''
-        Gets all the minute by minute data from the database
-
-        Args:
-            None
-
-        Returns:
-            list of MinuteData objects
-        '''
-        self.s.query(MinuteData)
 
     def add_notification(self, device, message):
         '''
@@ -193,10 +224,30 @@ class Database(object):
         Returns:
             None
         '''
-        query = s.query(Device).fliter(Device.name == name)
+        query = self.s.query(Device).fliter(Device.name == name)
         query.delete()
         s.commit()
         pass
+
+    def update_device(self, device, flow=None, status=None):
+        '''
+        Updates the flow settings for a specified device
+
+        Args:
+            device (str): the name of the device being updated
+            flow (int): the maximum flow value in L/Hr
+            status (str): the status of the device ("on" or "off")
+
+        Returns:
+            None
+        '''
+        _device = self.s.query(Device).filter(Device.name == device).first
+        if flow is not None:
+            _device.max_flow = flow
+            self.s.commit()
+        if status is not None:
+            _device.status = status
+            self.s.commit()
 
     def close(self):
         '''
