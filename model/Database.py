@@ -132,6 +132,9 @@ class Database(object):
         _device = self.s.query(Device).filter(Device.device == device).first
         return _device
 
+    def get_notifications(self):
+        return self.s.query(Notification)
+
 
     #Setter functions
     def set_next_id(self):
@@ -222,6 +225,12 @@ class Database(object):
         Returns:
             None
         '''
+        if message == "burst":
+            message = "There has been a burst at " + device
+        if message == "flow":
+            message = device + " has exceeded the maximum flow allowed"
+        if message == "remove":
+            message = device + " has been removed"
         self.s.add(Notification(device, message))
         self.s.commit()
 

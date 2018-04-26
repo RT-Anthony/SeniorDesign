@@ -73,12 +73,13 @@ def add_device(name):
     '''
     ip = str(request.remote_addr)
     db.add_device(str(name), ip)
-    db.add_notification(name, "Device Added")
+    db.add_notification(name, "Device has been added")
     return('PLACEHOLDER')
 
 @app.route('/notifications')
 def notifications():
-    return render_template('notifications.html')
+    notifications = db.get_notifications()
+    return render_template('notifications.html', notifications=notifications)
 
 @app.route('/notify/<device>/<message>')
 def notify(device, message):
