@@ -12,6 +12,7 @@ class Notification(Base):
     '''
     The Notification class is a convenience class for handling
     notifications sent by individual devices.
+    This class serves primarily as an ORM mapping for SQLAlchemy.
     '''
     stored_id = 1
     __tablename__ = 'alert_data'

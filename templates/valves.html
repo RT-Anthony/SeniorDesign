@@ -9,51 +9,25 @@
 	<div class="page-body">
 		<table>
 		<tr>
-		<th><strong>Location</strong></th>
+		<th><strong>Name</strong></th>
 		<th>&emsp;&emsp;</th>
 		<th><strong>Status</strong></th>
 		<th>&emsp;&emsp;</th>
 		<th><strong>Action</strong></th>
 		</tr>
+		{% for device in devices %}
 			<tr>
-			<td>Kitchen Sink</td>
+			<td>{{ device.device }}</td>
 			<td></td>
-			<td>Open</td>
+			<td>{{ device.status }}</td>
 			<td></td>
-			<td><button type="button" class="btn btn-warning">Close</button></td>
+			{% if device.status == "on" %}
+			<td><a href="/valves/{{ device.device }}/off"><button type="button" class="btn btn-warning">Close</button></a></td>
+			{% else %}
+			<td><a href="/valves/{{ device.device }}/on"><button type="button" class="btn btn-primary">Open</button></a></td>
+			{% endif %}
 			</tr>
-			
-			<tr>
-			<td>Upstairs Bathroom</td>
-			<td></td>
-			<td>Closed</td>
-			<td></td>
-			<td><button type="button" class="btn btn-primary">Open</button></td>
-			</tr>
-			
-			<tr>
-			<td>Upstairs Shower</td>
-			<td></td>
-			<td>Open</td>
-			<td></td>
-			<td><button type="button" class="btn btn-warning">Close</button></td>
-			</tr>
-			
-			<tr>
-			<td>Downstairs Bathroom</td>
-			<td></td>
-			<td>Open</td>
-			<td></td>
-			<td><button type="button" class="btn btn-warning">Close</button></td>
-			</tr>
-			
-			<tr>
-			<td>Downstairs Shower</td>
-			<td></td>
-			<td>Open</td>
-			<td></td>
-			<td><button type="button" class="btn btn-warning">Close</button></td>
-			</tr>
+		{% endfor %}
 		</table>
 	</div>
 </div>

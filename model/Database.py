@@ -5,6 +5,7 @@ Created on Feb 21, 2018
 '''
 import os
 import datetime
+import socket
 from sqlalchemy.ext.declarative.api import declarative_base
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -19,6 +20,8 @@ class Database(object):
     '''
     The Database class is a convenience class for
     interacting with the sqlite3 database.
+    This class acts primarily as a wrapper for SQLAlchemy with the addition
+    of some application specific helper functions.
     '''
 
 
@@ -42,6 +45,18 @@ class Database(object):
         self.s = self.session()
 
     #Getter functions
+    def get_devices(self):
+        '''
+        Returns all devices in the database
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
+        return self.s.query(Device)
+
     def get_hour_data(self):
         '''
         Gets all the hourly data from the database
@@ -52,7 +67,7 @@ class Database(object):
         Returns:
             list of HourData objects
         '''
-        self.s.query(HourData)
+        return self.s.query(HourData)
 
     def get_current_hour(self, device):
         '''
@@ -65,6 +80,7 @@ class Database(object):
             HourData table entry for the current flow data of the device
         '''
         query = self.s.query(HourData).filter(HourData.device == device).order_by(desc(HourData.timestamp)).limit(1).all()
+        return query
 
     def get_current_day(self, device):
         '''
@@ -77,6 +93,7 @@ class Database(object):
             DailyData table entry for the current flow data of the device
         '''
         query = self.s.query(DailyData).filter(DailyData.device == device).order_by(desc(DailyData.timestamp)).limit(1).all()
+        return query
 
     def get_daily_data(self):
         '''
@@ -88,7 +105,7 @@ class Database(object):
         Returns:
             list of DailyData objects
         '''
-        self.s.query(HourData)
+        return self.s.query(HourData)
 
     def get_minute_data(self):
         '''
@@ -100,7 +117,7 @@ class Database(object):
         Returns:
             list of MinuteData objects
         '''
-        self.s.query(MinuteData)
+        return self.s.query(MinuteData)
 
     def get_device(self, device):
         '''
@@ -112,7 +129,7 @@ class Database(object):
         Returns:
             Device object
         '''
-        _device = self.s.query(Device).filter(Device.name == device).first
+        _device = self.s.query(Device).filter(Device.device == device).first
         return _device
 
 
@@ -139,13 +156,22 @@ class Database(object):
 
     #Helper functions
     def update_hourly_data(self, device):
+        '''
+        Updates the database with the current flow for the past hour for a given device
+
+        Args:
+            Device (str): name of the device to be updated
+
+        Returns:
+            None
+        '''
         past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
         minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_hour)
         hourly_flow = 0
         for entry in minute_entries:
             hourly_flow += entry.flow
         self.s.add(HourData(device, hourly_flow))
-        _device = self.s.query(Device).filter(Device.name == device).first()
+        _device = self.s.query(Device).filter(Device.device == device).first()
         if _device.max_flow <= hourly_flow:
             pass #Shut off valve and update db
         self.s.commit()
@@ -224,10 +250,9 @@ class Database(object):
         Returns:
             None
         '''
-        query = self.s.query(Device).fliter(Device.name == name)
+        query = self.s.query(Device).fliter(Device.device == name)
         query.delete()
         s.commit()
-        pass
 
     def update_device(self, device, flow=None, status=None):
         '''
@@ -241,7 +266,7 @@ class Database(object):
         Returns:
             None
         '''
-        _device = self.s.query(Device).filter(Device.name == device).first
+        _device = self.s.query(Device).filter(Device.device == device).first()
         if flow is not None:
             _device.max_flow = flow
             self.s.commit()

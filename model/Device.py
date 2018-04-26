@@ -11,7 +11,8 @@ import datetime
 Base = declarative_base()
 class Device(Base):
     """Device:
-    Class for tracking individual devices and device settings"""
+    Class for tracking individual devices and device settings.
+    This class serves primarily as an ORM mapping for SQLAlchemy."""
     stored_id = 1
     __tablename__ = 'device'
     id = Column(Integer, primary_key=True)

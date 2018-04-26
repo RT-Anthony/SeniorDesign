@@ -10,7 +10,8 @@ import datetime
 Base = declarative_base()
 class MinuteData(Base):
     """MinuteData:
-    Class for tracking the minute by minute flow data for devices"""
+    Class for tracking the minute by minute flow data for devices
+    This class serves primarily as an ORM mapping for SQLAlchemy."""
     stored_id = 1
     __tablename__ = 'minute_flow_data'
     id = Column(Integer, primary_key=True)

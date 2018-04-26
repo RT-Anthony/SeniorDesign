@@ -2,6 +2,7 @@ import threading
 import time
 import RPi.GPIO as GPIO
 import socket
+import bluetooth
 
 class flow_unit(object):
     """This object handles the intialization of the flow unit, as

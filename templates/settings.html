@@ -2,22 +2,17 @@
 {% block content %}
 <div class="container">
 	<div class="page-header">
-		<h1>Threshold Settings</h1>
+		<h1>Threshold Settings (L/Hr)</h1>
 	</div>
 </div>
 <div class="container">
 	<div class="page-body">
 		<form class="form form-horizontal" method="POST" role="form" action="/settings">
-			<label for="hostname">Kitchen Sink: </label><br>
-			<input type="text" id="hostname" name="hostname"><br>
-			<label for="ip_addr">Upstairs Bathroom: </label><br>
-			<input type="text" id="ip_addr" name="ip_addr"><br>
-			<label for="rack">Upstairs Shower: </label><br>
-			<input type="text" id="rack" name="rack"><br>
-			<label for="ip_addr">Downstairs Bathroom: </label><br>
-			<input type="text" id="project" name="project"><br>
-			<label for="slot">Downstairs Shower: </label><br>
-			<input type="text" id="slot" name="slot"><br><br>
+			{% for device in devices %}
+			<label for="{{ device.device }}">{{ device.device }}: </label><br>
+			<input type="number" id="{{ device.device }}" name="{{ device.device }}" value="{{ device.max_flow }}"><br>
+			{% endfor %}
+			<br>
 			<input type="submit" name="action" value="SAVE">
 			<input type="reset" value="RESET">
 		</form>

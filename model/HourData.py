@@ -10,7 +10,8 @@ import datetime
 Base = declarative_base()
 class HourData(Base):
     """HourData:
-    Class for tracking the hourly flow data for devices"""
+    Class for tracking the hourly flow data for devices
+    This class serves primarily as an ORM mapping for SQLAlchemy."""
     stored_id = 1
     __tablename__ = 'hour_flow_data'
     id = Column(Integer, primary_key=True)

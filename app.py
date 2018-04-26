@@ -3,15 +3,14 @@ Created on Feb 21, 2018
 
 @author: Anthony Bell
 '''
-from flask import Flask, request, render_template, redirect, flash, send_from_directory, make_response
+from flask import Flask, request, render_template, redirect, flash, send_from_directory, make_response, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user
 from flask_login.utils import login_required, logout_user
-from email.mime.text import MIMEText
-import smtplib
 import os
 import sys
 import datetime
+import socket
 
 from model.Database import Database
 
@@ -33,18 +32,30 @@ def settings():
     '''
     Interface for managing max flow rates for devices
     '''
+    devices = db.get_devices()
     if request.method == 'POST':
-        pass
-    return render_template('settings.html')
+        for device in devices:
+            db.update_device(device.device, flow=request.form[device.device])
+    return render_template('settings.html', devices=devices)
 
-@app.route('/valves', methods=['GET', 'POST'])
+@app.route('/valves', methods=['GET'])
 def valves():
     '''
     Interface for user valve management
     '''
-    if request.method == 'POST':
+    devices = db.get_devices()
+    return render_template('valves.html', devices=devices)
+
+@app.route('/valves/<device>/<status>')
+def valves_update(device, status):
+    if status == "on":
+        #send command to open valve
         pass
-    return render_template('valves.html')
+    else:
+        #send command to close valve
+        pass
+    db.update_device(device, status=status)
+    return redirect(url_for("valves"))
 
 @app.route('/update/<device>/<flow>')
 def update(device, flow):
@@ -64,6 +75,10 @@ def add_device(name):
     db.add_device(str(name), ip)
     db.add_notification(name, "Device Added")
     return('PLACEHOLDER')
+
+@app.route('/notifications')
+def notifications():
+    return render_template('notifications.html')
 
 @app.route('/notify/<device>/<message>')
 def notify(device, message):
