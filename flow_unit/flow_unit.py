@@ -59,8 +59,7 @@ class flow_unit(object):
     def __init__(self, dev_name, srvip, port = 80):
         """Main initialization module for flow_unit object. See Docstring for object.
         """
-        controller = "http://localhost/"
-        device = "test1"
+
         GPIO.setmode(GPIO.BCM)
         self.count = 0 #variable to count the number of ticks from flow sensor
         self.flow_port = 9 #port flow sensor is on
@@ -70,8 +69,8 @@ class flow_unit(object):
         self.serverport = port
         self.serverip = srvip
         self.devicename = dev_name
-        GPIO.setup(open_port, GPIO.OUT) #enable output port
-        GPIO.setup(close_port, GPIO.OUT) #enable output port
+        GPIO.setup(self.open_port, GPIO.OUT) #enable output port
+        GPIO.setup(self.close_port, GPIO.OUT) #enable output port
         #enable flow thread
         flowthread = threading.Thread(target = self.init_flow)
         flowthread.start()
@@ -148,7 +147,7 @@ class flow_unit(object):
         """This function is used to update the main control unit with the average
         flow over 60 seconds"""
         base_addy = self.serverip + ":" + str(self.serverport)
-        device_url = "/update/" + self.devicename + str(average_flow)
+        device_url = "/update/" + self.devicename + "/" + str(average_flow)
         update_conn = http.client.HTTPConnection(base_addy)
         update_conn.request('GET',device_url)
         update_conn.close()
