@@ -6,7 +6,7 @@ import socket
 import http.client
 
 class flow_unit(object):
-    '''
+    """
     This object handles the intialization of the flow unit, as
     well as the threads for managing the device. It seeds three thread
     objects that perform the following tasks:
@@ -54,14 +54,13 @@ class flow_unit(object):
         -Add sections to each thread init function to properly handle updating
         the main control unit.
         -Test intercommunication between the flow unit and the main controller.
-        """
+    """
 
     def __init__(self, dev_name, srvip, port = 80):
         """Main initialization module for flow_unit object. See Docstring for object.
         """
         controller = "http://localhost/"
         device = "test1"
-        def __init__(self):
         GPIO.setmode(GPIO.BCM)
         self.count = 0 #variable to count the number of ticks from flow sensor
         self.flow_port = 9 #port flow sensor is on
@@ -222,4 +221,5 @@ class flow_unit(object):
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
             if "TT_BURST" in ble_devices:
                 close_flow()
+                print("BURST DETECTED!!!!!!")
         #do bluetooth stuff
