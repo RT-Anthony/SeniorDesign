@@ -10,6 +10,7 @@ from flask_login.utils import login_required, logout_user
 import os
 import sys
 import datetime
+import time
 import socket
 
 from model.Database import Database
@@ -49,13 +50,17 @@ def valves():
 @app.route('/valves/<device>/<status>')
 def valves_update(device, status):
     _device = db.get_device(device)
+    print(_device)
+    print(_device.ip)
     if status == "on":
-        mySocket.connect((_device.ip, 42425))
-        mySocket.send("open_valve")
+        mySocket.connect((str(_device.ip), 42425))
+        mySocket.sendall(b"open_valve")
+        time.sleep(1)
         mySocket.close()
     else:
-        mySocket.connect((_device.ip, 42425))
-        mySocket.send("close_valve")
+        mySocket.connect((str(_device.ip), 42425))
+        mySocket.sendall(b"close_valve")
+        time.sleep(1)
         mySocket.close()
     db.update_device(device, status=status)
     return redirect(url_for("valves"))
@@ -72,7 +77,8 @@ def update(device, flow):
     if hourly_flow >= db.get_device(device).max_flow:
         db.update_device(device, status="off")
         mySocket.connect((_device.ip, 42425))
-        mySocket.send("close_valve")
+        mySocket.sendall(b"close_valve")
+        time.sleep(1)
         mySocket.close()
         return("Shutoff")
     return("Pass")

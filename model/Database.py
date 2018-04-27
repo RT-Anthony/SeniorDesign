@@ -129,7 +129,7 @@ class Database(object):
         Returns:
             Device object
         '''
-        _device = self.s.query(Device).filter(Device.device == device).first
+        _device = self.s.query(Device).filter(Device.device == device).first()
         return _device
 
     def get_notifications(self):
