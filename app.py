@@ -62,9 +62,14 @@ def update(device, flow):
     '''
     Interface for recieving flow data from devices
     '''
-    db.add_minute_data(device, flow)
-    #TODO UPDATE THE RETURN FOR THIS PART
-    return("PLACEHOLDER")
+    _device = db.get_device(device)
+    if not _device:
+        db.add_device(device)
+    hourly_flow = db.add_minute_data(device, flow)
+    if hourly_flow >= db.get_device(device).max_flow:
+        db.update_device(device, status="off")
+        return("Shutoff")
+    return("Pass")
 
 @app.route('/add_device/<name>')
 def add_device(name):
@@ -111,5 +116,6 @@ if __name__ == '__main__':  # Script executed directly?
         srvport = 80
 
     db = Database()
+    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     app.run(host='0.0.0.0', port=srvport)  # Launch built-in web server and run this Flask webapp

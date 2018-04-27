@@ -166,7 +166,7 @@ class Database(object):
             Device (str): name of the device to be updated
 
         Returns:
-            None
+            hourly_flow (int): total flow for the previous hour
         '''
         past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
         minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_hour)
@@ -178,6 +178,7 @@ class Database(object):
         if _device.max_flow <= hourly_flow:
             pass #Shut off valve and update db
         self.s.commit()
+        return hourly_flow
 
     def update_daily_data(self, device):
         '''
@@ -207,12 +208,13 @@ class Database(object):
             flow (int): Flow data for the device (default = 0)
 
         Returns:
-            None
+            hourly_flow (int): flow for the last hour
         '''
         self.s.add(MinuteData(device, flow))
-        self.update_hourly_data(device)
+        hourly_flow = self.update_hourly_data(device)
         self.update_daily_data(device)
         self.s.commit()
+        return hourly_flow
 
     def add_notification(self, device, message):
         '''

@@ -3,6 +3,7 @@ import time
 import RPi.GPIO as GPIO
 import socket
 import bluetooth
+import urllib.request
 
 class flow_unit(object):
     """This object handles the intialization of the flow unit, as
@@ -54,6 +55,9 @@ class flow_unit(object):
         -Test intercommunication between the flow unit and the main controller.
 
     """
+
+    controller = "http://localhost/"
+    device = "test1"
     def __init__(self):
     """Main initialization module for flow_unit object. See Docstring for object.
 
@@ -123,6 +127,9 @@ class flow_unit(object):
                     flow = (freq+3)/8.1 #flow = lpm flow rate
                     #return lpm to controller
                     print("Average flow rate over 10 seconds = ", flow)
+                    #TODO implement after adjustment to minute
+                    if "Shutoff" in urllib.request.urlopen(controller + device + "/" + flow).read():
+                        close_flow()
 
     def close_flow(self,timedelay):
     """Module to close the flow valve.

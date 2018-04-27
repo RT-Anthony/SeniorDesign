@@ -12,6 +12,8 @@ class Emailer(object):
 
     recipients = []
 
+    email_from = "notifications@TrickleTerminators.com"
+
     def __init__(self, recipients=None):
         '''
         Constructor
@@ -50,7 +52,7 @@ class Emailer(object):
         '''
         pass
 
-    def send_message(self, template="burst"):
+    def send_message(self, template="burst", message=""):
         '''
         Sends a message based on a specified template
 
@@ -61,5 +63,19 @@ class Emailer(object):
             None
         '''
         if template == "burst":
-            subject = subject_burst
+            subject = self.subject_burst
+        elif template == "flow":
+            subject = self.subject_flow
+        elif template == "add":
+            subject = self.subject_add
+        elif template == "remove"
+            subject = self.subject_remove
+        else:
+            subject = "Alert posted"
+        msg = MIMEText(message)
+        msg['Subject'] = subject
+        msg['From'] = self.email_from
+        for recipient in self.recipients:
+            msg['To'] = recipient
+            self.emailer.send_message(msg)
         pass
