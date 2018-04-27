@@ -4,12 +4,12 @@
  ** @file    beaconbutton.c
  ** @brief   Main entry point for the button/led/timer demo program
  **
- ** This SOC project demonstrates 
- ** 1. Buttons via GPIO pins.  It includes normal presses, long presses, and a 
+ ** This SOC project demonstrates
+ ** 1. Buttons via GPIO pins.  It includes normal presses, long presses, and a
  **    function that returns the running time that a button has been held.
  ** 2. Use of the 32.768 KHz clock
- ** 3. One-shot delay timer 
- ** 4. A discoverable/connectable beacon 
+ ** 3. One-shot delay timer
+ ** 4. A discoverable/connectable beacon
  ** 5. LEDs via GPIO
  **
  ** Copyright (c) 2018 EM Microelectronic-US Inc. All rights reserved.
@@ -215,10 +215,10 @@ void BcnBtn_Wakeup(Driver_Status_t status, void *pUserData)
 
 /**
  * @brief callback for core stack events
- * 
- * @param event 
- * @param status 
- * @param pParam 
+ *
+ * @param event
+ * @param status
+ * @param pParam
  */
 void BcnBtn_CoreCallback(BleEvent event, BleStatus status, void *pParam)
 {
@@ -251,10 +251,10 @@ void BcnBtn_CoreCallback(BleEvent event, BleStatus status, void *pParam)
 
 /**
  * @brief callback for stack GAP events
- * 
- * @param event 
- * @param status 
- * @param parms 
+ *
+ * @param event
+ * @param status
+ * @param parms
  */
 void BcnBtn_GapCallback(BleGapEvent event, BleStatus status, void *parms)
 {
@@ -276,15 +276,18 @@ void BcnBtn_GapCallback(BleGapEvent event, BleStatus status, void *parms)
 
 /**
  * @brief manage the LED.  Set it according to app and button states
- *  
- * Normally, pressing the button toggles the LED on/off.  Holding the button for 
+ *
+ * Normally, pressing the button toggles the LED on/off.  Holding the button for
  * more than 3 secs makes it begin to toggle at a 1Hz rate.
- *  
+ *
  * This function demonstrates the use of GetButtonPressTime().
- *        
+ *
  */
 void BcnBtn_ManageLED(BcnBtnTask_t *me)
 {
+    if( PushButtonDown() ){
+      (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_BURST", 8u);
+    }
     // Get the time in ms that the button has been held (0 if not pressed)
     U32 bt = GetButtonPressTime();
     // Has the button been held for >3 secs?
@@ -330,7 +333,7 @@ void BcnBtn_ManageLED(BcnBtnTask_t *me)
  * @brief Wakeup and run the next interval
  *
  * Arrive here when in normal run state and the sleep timer
- * has expired. 
+ * has expired.
  *
  */
 QState BcnBtnRunNext(BcnBtnTask_t *me)
@@ -377,7 +380,7 @@ QState BcnBtnRunStackEvents(BcnBtnTask_t *me) {
                 BcnBtn_StackMutexUnlock(stackMutex);
 
                 // Set the name of the peripheral.
-                (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"BeaconButton04", 14u);
+                (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_GOOD", 7u);
 
                 // Start advertising.
                 (void)BLEGAP_SetMode(BLEMODE_DISCOVERABLE | BLEMODE_CONNECTABLE);
@@ -459,7 +462,7 @@ QState BcnBtnTask_Init(BcnBtnTask_t *me) {
    stackMutex = BcnBtn_StackMutexLock();
    BleStatus bleStatus = BLEMGMT_InitWithHandler(&me->handler);
    BcnBtn_StackMutexUnlock(stackMutex);
-   
+
    if (BLESTATUS_SUCCESS == bleStatus || BLESTATUS_PENDING == bleStatus )
    {
        // Now wait for the stack to finish initialization.
@@ -611,4 +614,3 @@ void BcnBtn_Entry(void)
 {
     ( void ) BcnBtn_EntryPatchable();
 }
-

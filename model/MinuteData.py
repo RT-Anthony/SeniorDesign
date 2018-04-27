@@ -10,12 +10,13 @@ import datetime
 Base = declarative_base()
 class MinuteData(Base):
     """MinuteData:
-    Class for tracking the minute by minute flow data for devices"""
+    Class for tracking the minute by minute flow data for devices
+    This class serves primarily as an ORM mapping for SQLAlchemy."""
     stored_id = 1
     __tablename__ = 'minute_flow_data'
     id = Column(Integer, primary_key=True)
     device = Column(Text)
-    day = Column(DateTime)
+    minute = Column(DateTime)
     flow = Column(Integer)
 
     def __init__(self, device, flow):
@@ -33,4 +34,4 @@ class MinuteData(Base):
         MinuteData.stored_id += 1
         self.device = device
         self.flow = flow
-        self.day = datetime.datetime.now()
+        self.minute = datetime.datetime.now()

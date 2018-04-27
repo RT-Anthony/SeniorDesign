@@ -7,10 +7,12 @@ from sqlalchemy.ext.declarative.api import declarative_base
 from sqlalchemy import Column, Integer, Text, DateTime
 import datetime
 
-class Notification(object):
+Base = declarative_base()
+class Notification(Base):
     '''
     The Notification class is a convenience class for handling
     notifications sent by individual devices.
+    This class serves primarily as an ORM mapping for SQLAlchemy.
     '''
     stored_id = 1
     __tablename__ = 'alert_data'

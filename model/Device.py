@@ -11,7 +11,8 @@ import datetime
 Base = declarative_base()
 class Device(Base):
     """Device:
-    Class for tracking individual devices and device settings"""
+    Class for tracking individual devices and device settings.
+    This class serves primarily as an ORM mapping for SQLAlchemy."""
     stored_id = 1
     __tablename__ = 'device'
     id = Column(Integer, primary_key=True)
@@ -21,7 +22,7 @@ class Device(Base):
     ip = Column(Text)
 
 
-    def __init__(self, name, flow=1000, ip="0.0.0.0"):
+    def __init__(self, name="default", flow=1000, ip="0.0.0.0"):
         """
         Constructor
 
@@ -34,7 +35,7 @@ class Device(Base):
         """
         self.id = Device.stored_id
         Device.stored_id += 1
-        self.name = name
-        self.flow = flow
+        self.device = name
+        self.max_flow = flow
         self.status = "on"
         self.ip = ip

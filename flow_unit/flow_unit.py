@@ -53,7 +53,11 @@ class flow_unit(object):
         -Test intercommunication between the flow unit and the main controller.
 
         """
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> a45db181eab3b104e588415dc2ee99d679398632
     def __init__(self):
         """Main initialization module for flow_unit object. See Docstring for object.
 
@@ -165,7 +169,7 @@ class flow_unit(object):
         sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         sock.bind(("0.0.0.0",self.listenport))
         sock.listen(5)
-        While True:
+        while True:
             (clientsock,address) = sock.accept()
             sock.sendto("Connection accepted",(clientsock,address))
             data = sock.recv(1024)
