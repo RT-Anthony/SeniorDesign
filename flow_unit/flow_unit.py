@@ -1,5 +1,6 @@
 import threading
 import time
+import os
 import RPi.GPIO as GPIO
 import socket
 import urllib.request
@@ -147,7 +148,7 @@ class flow_unit(object):
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
 
-    def open_flow(self,timedelay):
+    def open_flow(self,timedelay=5):
         '''
         Module to open the flow valve.
 
@@ -196,5 +197,8 @@ class flow_unit(object):
         '''
         To be filled in
         '''
+        while True:
+            ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
+            if "TT_BURST" in ble_devices:
+                close_flow()
         #do bluetooth stuff
-        x = 1+1
