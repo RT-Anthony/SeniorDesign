@@ -50,6 +50,7 @@ def valves():
 @app.route('/valves/<device>/<status>')
 def valves_update(device, status):
     _device = db.get_device(device)
+    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(_device)
     print(_device.ip)
     if status == "on":
@@ -76,6 +77,7 @@ def update(device, flow):
     hourly_flow = db.add_minute_data(device, flow)
     if hourly_flow >= db.get_device(device).max_flow:
         db.update_device(device, status="off")
+        mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         mySocket.connect((_device.ip, 42425))
         mySocket.sendall(b"close_valve")
         time.sleep(1)
@@ -128,6 +130,5 @@ if __name__ == '__main__':  # Script executed directly?
         srvport = 80
 
     db = Database()
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     app.run(host='0.0.0.0', port=srvport)  # Launch built-in web server and run this Flask webapp
