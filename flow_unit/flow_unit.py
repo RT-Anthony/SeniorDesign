@@ -2,7 +2,6 @@ import threading
 import time
 import RPi.GPIO as GPIO
 import socket
-import bluetooth
 
 class flow_unit(object):
     """This object handles the intialization of the flow unit, as
@@ -53,14 +52,15 @@ class flow_unit(object):
         the main control unit.
         -Test intercommunication between the flow unit and the main controller.
 
-    """
+        """
+
     def __init__(self):
-    """Main initialization module for flow_unit object. See Docstring for object.
+        """Main initialization module for flow_unit object. See Docstring for object.
 
-    Returns:
-        None
+        Returns:
+            None
 
-    """
+        """
         GPIO.setmode(GPIO.BCM)
         self.count = 0 #variable to count the number of ticks from flow sensor
         self.flow_port = 9 #port flow sensor is on
@@ -81,30 +81,30 @@ class flow_unit(object):
         #bt_thread.start()
 
     def flow_callback(self,channel):
-    """This module serves as the interrupt callback function for a detected
-    event on the flow sensor input. This function counts the number of
-    square waves received in order to calculate the frequency over 10 secs
-    in the flow sensor thread.
+        """This module serves as the interrupt callback function for a detected
+        event on the flow sensor input. This function counts the number of
+        square waves received in order to calculate the frequency over 10 secs
+        in the flow sensor thread.
 
-    Args:
-        channel (int): flow unit BCM port number. Generally should be handed
-        'self.flow_port' for ease of use.
+        Args:
+            channel (int): flow unit BCM port number. Generally should be handed
+            'self.flow_port' for ease of use.
 
-    Returns:
-        None, but does modify parent object's count variable.
+        Returns:
+            None, but does modify parent object's count variable.
 
-    """
+        """
         self.count = self.count + 1
 
     def init_flow(self):
-    """Module that is utilized to initialize the flow sensor. This function is
-    called during object instanciation, and becomes the module that the thread
-    object runs.
+        """Module that is utilized to initialize the flow sensor. This function is
+        called during object instanciation, and becomes the module that the thread
+        object runs.
 
-    Returns:
-        None. Module designed to perform threaded task for the flow sensor.
+        Returns:
+            None. Module designed to perform threaded task for the flow sensor.
 
-    """
+        """
 
         GPIO.setup(self.flow_port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(self.flow_port,GPIO.RISING,callback=self.flow_callback)
@@ -113,7 +113,7 @@ class flow_unit(object):
         while True:
             currtime = time.time()
             if ((currtime - lasttime) >= 10):
-                last_time = time.time()
+                lasttime = time.time()
                 if self.count == 0:
                     #send 0 to controller
                     self.count = 0
@@ -125,55 +125,56 @@ class flow_unit(object):
                     print("Average flow rate over 10 seconds = ", flow)
 
     def close_flow(self,timedelay):
-    """Module to close the flow valve.
+        """Module to close the flow valve.
 
-    Args:
-        timedelay (float): numerical value to wait while the valve is closed.
+        Args:
+            timedelay (float): numerical value to wait while the valve is closed.
 
-    Returns:
-        None.
+        Returns:
+            None.
 
-    """
+        """
         GPIO.output(self.close_port,1)
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
 
     def open_flow(self,timedelay):
-    """Module to open the flow valve.
+        """Module to open the flow valve.
 
-    Args:
-        timedelay (float): numerical value to wait while the valve is opened.
+        Args:
+            timedelay (float): numerical value to wait while the valve is opened.
 
-    Returns:
-        None.
+        Returns:
+            None.
 
-    """
+        """
         GPIO.output(self.open_port,1)
         time.sleep(timedelay)
         GPIO.output(self.open_port,0)
 
     def init_listener(self):
-    """Module that performs tasks related to listening for commands from main
-    control unit. This module is used as the threaded moduled handed to the
-    thread object. This is handled upon instanciation of the flow_unit object.
+        """Module that performs tasks related to listening for commands from main
+        control unit. This module is used as the threaded moduled handed to the
+        thread object. This is handled upon instanciation of the flow_unit object.
 
-    Returns:
-        None, this code is executed within a thread object.
+        Returns:
+            None, this code is executed within a thread object.
 
-    """
-        sock = socket.socket(socket=AF_INET,socket.SOCK_STREAM)
+        """
+        delay = 5 #set value for delay to be 5 seconds
+        sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         sock.bind(("0.0.0.0",self.listenport))
         sock.listen(5)
-        While True:
+        while True:
             (clientsock,address) = sock.accept()
             sock.sendto("Connection accepted",(clientsock,address))
             data = sock.recv(1024)
             if data:
                 if data == "open_valve":
-                    self.open_flow()
+                    self.open_flow(5)
                     sock.sendto("valve openeded")
                 elif data == "close_valve":
-                    self.close_valve()
+                    self.close_valve(5)
                     sock.sendto("valve closed")
                 else:
                     #insert error message
