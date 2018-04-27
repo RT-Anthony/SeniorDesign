@@ -2,6 +2,7 @@ import threading
 import time
 import RPi.GPIO as GPIO
 import socket
+import http.client
 
 class flow_unit(object):
     """This object handles the intialization of the flow unit, as
@@ -53,12 +54,8 @@ class flow_unit(object):
         -Test intercommunication between the flow unit and the main controller.
 
         """
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> a45db181eab3b104e588415dc2ee99d679398632
-    def __init__(self):
+    def __init__(self, dev_name, srvip, port = 80):
         """Main initialization module for flow_unit object. See Docstring for object.
 
         Returns:
@@ -70,13 +67,16 @@ class flow_unit(object):
         self.flow_port = 9 #port flow sensor is on
         self.open_port = 5 #update port numbers
         self.close_port = 26 #update port numbers
-        listenport = 42425
+        self.listenport = 42425
+        self.serverport = port
+        self.serverip = srvip
+        self.devicename = dev_name
         GPIO.setup(open_port, GPIO.OUT) #enable output port
         GPIO.setup(close_port, GPIO.OUT) #enable output port
         #enable flow thread
         flowthread = threading.Thread(target = self.init_flow)
         flowthread.start()
-        #enable valve control listener (commands issued from main controller)
+        #enable valve control srvlistener (commands issued from main controller)
         listenthread = threading.Thread(target = self.init_listener)
         listenthread.start()
         #enable bluetooth thread, to be completed. currently disabled for
@@ -114,6 +114,7 @@ class flow_unit(object):
         GPIO.add_event_detect(self.flow_port,GPIO.RISING,callback=self.flow_callback)
         currtime = time.time()
         lasttime = currtime
+        self.add_device_controller()
         while True:
             currtime = time.time()
             if ((currtime - lasttime) >= 10):
@@ -121,12 +122,32 @@ class flow_unit(object):
                 if self.count == 0:
                     #send 0 to controller
                     self.count = 0
+                    self.flow_update_controller(0)
                 else:
                     freq = self.count/10
                     self.count = 0
                     flow = (freq+3)/8.1 #flow = lpm flow rate
                     #return lpm to controller
+                    self.flow_update_controller(flow)
                     print("Average flow rate over 10 seconds = ", flow)
+
+    def add_device_controller(self):
+        """This function is used to register a device with the controller using
+        http://<controller>/add_device/<devicename>"""
+        base_addy = self.serverip + ":" + str(self.serverport)
+        device_url = "/add_device/" + self.devicename
+        update_conn = http.client.HTTPConnection(base_addy)
+        update_conn.request('GET',device_url)
+        update_conn.close()
+
+    def flow_update_controller(self,average_flow):
+        """This function is used to update the main control unit with the average
+        flow over 60 seconds"""
+        base_addy = self.serverip + ":" + str(self.serverport)
+        device_url = "/update/" + self.devicename + str(average_flow)
+        update_conn = http.client.HTTPConnection(base_addy)
+        update_conn.request('GET',device_url)
+        update_conn.close()
 
     def close_flow(self,timedelay):
         """Module to close the flow valve.
