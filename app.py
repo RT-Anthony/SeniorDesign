@@ -48,12 +48,15 @@ def valves():
 
 @app.route('/valves/<device>/<status>')
 def valves_update(device, status):
+    _device = db.get_device(device)
     if status == "on":
-        #send command to open valve
-        pass
+        mySocket.connect((_device.ip, 42425))
+        mySocket.send("open_valve")
+        mySocket.close()
     else:
-        #send command to close valve
-        pass
+        mySocket.connect((_device.ip, 42425))
+        mySocket.send("close_valve")
+        mySocket.close()
     db.update_device(device, status=status)
     return redirect(url_for("valves"))
 
@@ -68,6 +71,9 @@ def update(device, flow):
     hourly_flow = db.add_minute_data(device, flow)
     if hourly_flow >= db.get_device(device).max_flow:
         db.update_device(device, status="off")
+        mySocket.connect((_device.ip, 42425))
+        mySocket.send("close_valve")
+        mySocket.close()
         return("Shutoff")
     return("Pass")
 
