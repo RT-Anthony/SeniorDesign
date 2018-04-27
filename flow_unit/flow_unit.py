@@ -1,11 +1,13 @@
 import threading
 import time
+import os
 import RPi.GPIO as GPIO
 import socket
 import http.client
 
 class flow_unit(object):
-    """This object handles the intialization of the flow unit, as
+    '''
+    This object handles the intialization of the flow unit, as
     well as the threads for managing the device. It seeds three thread
     objects that perform the following tasks:
 
@@ -52,16 +54,14 @@ class flow_unit(object):
         -Add sections to each thread init function to properly handle updating
         the main control unit.
         -Test intercommunication between the flow unit and the main controller.
-
         """
 
     def __init__(self, dev_name, srvip, port = 80):
         """Main initialization module for flow_unit object. See Docstring for object.
-
-        Returns:
-            None
-
         """
+        controller = "http://localhost/"
+        device = "test1"
+        def __init__(self):
         GPIO.setmode(GPIO.BCM)
         self.count = 0 #variable to count the number of ticks from flow sensor
         self.flow_port = 9 #port flow sensor is on
@@ -85,7 +85,8 @@ class flow_unit(object):
         #bt_thread.start()
 
     def flow_callback(self,channel):
-        """This module serves as the interrupt callback function for a detected
+        """
+        This module serves as the interrupt callback function for a detected
         event on the flow sensor input. This function counts the number of
         square waves received in order to calculate the frequency over 10 secs
         in the flow sensor thread.
@@ -101,7 +102,8 @@ class flow_unit(object):
         self.count = self.count + 1
 
     def init_flow(self):
-        """Module that is utilized to initialize the flow sensor. This function is
+        """
+        Module that is utilized to initialize the flow sensor. This function is
         called during object instanciation, and becomes the module that the thread
         object runs.
 
@@ -130,6 +132,9 @@ class flow_unit(object):
                     #return lpm to controller
                     self.flow_update_controller(flow)
                     print("Average flow rate over 10 seconds = ", flow)
+                    #TODO implement after adjustment to minute
+                    if "Shutoff" in urllib.request.urlopen(controller + device + "/" + flow).read():
+                        close_flow()
 
     def add_device_controller(self):
         """This function is used to register a device with the controller using
@@ -149,8 +154,9 @@ class flow_unit(object):
         update_conn.request('GET',device_url)
         update_conn.close()
 
-    def close_flow(self,timedelay):
-        """Module to close the flow valve.
+    def close_flow(self,timedelay=5):
+        """
+        Module to close the flow valve.
 
         Args:
             timedelay (float): numerical value to wait while the valve is closed.
@@ -163,8 +169,9 @@ class flow_unit(object):
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
 
-    def open_flow(self,timedelay):
-        """Module to open the flow valve.
+    def open_flow(self,timedelay=5):
+        """
+        Module to open the flow valve.
 
         Args:
             timedelay (float): numerical value to wait while the valve is opened.
@@ -178,7 +185,8 @@ class flow_unit(object):
         GPIO.output(self.open_port,0)
 
     def init_listener(self):
-        """Module that performs tasks related to listening for commands from main
+        """
+        Module that performs tasks related to listening for commands from main
         control unit. This module is used as the threaded moduled handed to the
         thread object. This is handled upon instanciation of the flow_unit object.
 
@@ -207,6 +215,11 @@ class flow_unit(object):
 
 
     def init_bluetooth(self):
-        """To be filled in"""
+        """
+        To be filled in
+        """
+        while True:
+            ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
+            if "TT_BURST" in ble_devices:
+                close_flow()
         #do bluetooth stuff
-        x = 1+1
