@@ -3,7 +3,7 @@ import time
 import os
 import RPi.GPIO as GPIO
 import socket
-import urllib.request
+import http.client
 
 class flow_unit(object):
     '''
@@ -54,29 +54,29 @@ class flow_unit(object):
         -Add sections to each thread init function to properly handle updating
         the main control unit.
         -Test intercommunication between the flow unit and the main controller.
-    '''
-    controller = "http://localhost/"
-    device = "test1"
-    def __init__(self):
-        '''
-        Main initialization module for flow_unit object. See Docstring for object.
+        """
 
-        Returns:
-            None
-
-        '''
+    def __init__(self, dev_name, srvip, port = 80):
+        """Main initialization module for flow_unit object. See Docstring for object.
+        """
+        controller = "http://localhost/"
+        device = "test1"
+        def __init__(self):
         GPIO.setmode(GPIO.BCM)
         self.count = 0 #variable to count the number of ticks from flow sensor
         self.flow_port = 9 #port flow sensor is on
         self.open_port = 5 #update port numbers
         self.close_port = 26 #update port numbers
-        listenport = 42425
+        self.listenport = 42425
+        self.serverport = port
+        self.serverip = srvip
+        self.devicename = dev_name
         GPIO.setup(open_port, GPIO.OUT) #enable output port
         GPIO.setup(close_port, GPIO.OUT) #enable output port
         #enable flow thread
         flowthread = threading.Thread(target = self.init_flow)
         flowthread.start()
-        #enable valve control listener (commands issued from main controller)
+        #enable valve control srvlistener (commands issued from main controller)
         listenthread = threading.Thread(target = self.init_listener)
         listenthread.start()
         #enable bluetooth thread, to be completed. currently disabled for
@@ -85,7 +85,7 @@ class flow_unit(object):
         #bt_thread.start()
 
     def flow_callback(self,channel):
-        '''
+        """
         This module serves as the interrupt callback function for a detected
         event on the flow sensor input. This function counts the number of
         square waves received in order to calculate the frequency over 10 secs
@@ -98,11 +98,11 @@ class flow_unit(object):
         Returns:
             None, but does modify parent object's count variable.
 
-        '''
+        """
         self.count = self.count + 1
 
     def init_flow(self):
-        '''
+        """
         Module that is utilized to initialize the flow sensor. This function is
         called during object instanciation, and becomes the module that the thread
         object runs.
@@ -110,12 +110,13 @@ class flow_unit(object):
         Returns:
             None. Module designed to perform threaded task for the flow sensor.
 
-        '''
+        """
 
         GPIO.setup(self.flow_port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(self.flow_port,GPIO.RISING,callback=self.flow_callback)
         currtime = time.time()
         lasttime = currtime
+        self.add_device_controller()
         while True:
             currtime = time.time()
             if ((currtime - lasttime) >= 10):
@@ -123,18 +124,38 @@ class flow_unit(object):
                 if self.count == 0:
                     #send 0 to controller
                     self.count = 0
+                    self.flow_update_controller(0)
                 else:
                     freq = self.count/10
                     self.count = 0
                     flow = (freq+3)/8.1 #flow = lpm flow rate
                     #return lpm to controller
+                    self.flow_update_controller(flow)
                     print("Average flow rate over 10 seconds = ", flow)
                     #TODO implement after adjustment to minute
                     if "Shutoff" in urllib.request.urlopen(controller + device + "/" + flow).read():
                         close_flow()
 
-    def close_flow(self,timedelay):
-        '''
+    def add_device_controller(self):
+        """This function is used to register a device with the controller using
+        http://<controller>/add_device/<devicename>"""
+        base_addy = self.serverip + ":" + str(self.serverport)
+        device_url = "/add_device/" + self.devicename
+        update_conn = http.client.HTTPConnection(base_addy)
+        update_conn.request('GET',device_url)
+        update_conn.close()
+
+    def flow_update_controller(self,average_flow):
+        """This function is used to update the main control unit with the average
+        flow over 60 seconds"""
+        base_addy = self.serverip + ":" + str(self.serverport)
+        device_url = "/update/" + self.devicename + str(average_flow)
+        update_conn = http.client.HTTPConnection(base_addy)
+        update_conn.request('GET',device_url)
+        update_conn.close()
+
+    def close_flow(self,timedelay=5):
+        """
         Module to close the flow valve.
 
         Args:
@@ -143,13 +164,13 @@ class flow_unit(object):
         Returns:
             None.
 
-        '''
+        """
         GPIO.output(self.close_port,1)
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
 
     def open_flow(self,timedelay=5):
-        '''
+        """
         Module to open the flow valve.
 
         Args:
@@ -158,13 +179,13 @@ class flow_unit(object):
         Returns:
             None.
 
-        '''
+        """
         GPIO.output(self.open_port,1)
         time.sleep(timedelay)
         GPIO.output(self.open_port,0)
 
     def init_listener(self):
-        '''
+        """
         Module that performs tasks related to listening for commands from main
         control unit. This module is used as the threaded moduled handed to the
         thread object. This is handled upon instanciation of the flow_unit object.
@@ -172,7 +193,7 @@ class flow_unit(object):
         Returns:
             None, this code is executed within a thread object.
 
-        '''
+        """
         delay = 5 #set value for delay to be 5 seconds
         sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         sock.bind(("0.0.0.0",self.listenport))
@@ -194,9 +215,9 @@ class flow_unit(object):
 
 
     def init_bluetooth(self):
-        '''
+        """
         To be filled in
-        '''
+        """
         while True:
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
             if "TT_BURST" in ble_devices:
