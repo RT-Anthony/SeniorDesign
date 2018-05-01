@@ -14,7 +14,7 @@ class Emailer(object):
 
     email_from = "notifications@TrickleTerminators.com"
 
-    def __init__(self, recipients=None):
+    def __init__(self, recipients=[]):
         '''
         Constructor
 
@@ -24,8 +24,6 @@ class Emailer(object):
         Returns:
             Emailer object
         '''
-        emailer = smtplib.SMTP('smtp.gmail.com', 587)
-        emailer.ehlo("TrickleTerminators")
         self.recipients = recipients
 
     def add_recipient(self, recipient):
@@ -62,20 +60,28 @@ class Emailer(object):
         Returns:
             None
         '''
+        emailer = smtplib.SMTP('smtp.gmail.com', 587)
+        emailer.ehlo("TrickleTerminators")
+        emailer.starttls()
+        #need to add authentication stuff
         if template == "burst":
             subject = self.subject_burst
         elif template == "flow":
             subject = self.subject_flow
         elif template == "add":
             subject = self.subject_add
-        elif template == "remove"
+        elif template == "remove":
             subject = self.subject_remove
         else:
             subject = "Alert posted"
         msg = MIMEText(message)
         msg['Subject'] = subject
         msg['From'] = self.email_from
+        #try:
         for recipient in self.recipients:
             msg['To'] = recipient
-            self.emailer.send_message(msg)
-        pass
+            emailer.send_message(msg)
+            print("Email sent to: " + recipient)
+        #except:
+            #pass
+        emailer.close()

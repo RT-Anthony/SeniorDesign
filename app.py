@@ -51,8 +51,6 @@ def valves():
 def valves_update(device, status):
     _device = db.get_device(device)
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(_device)
-    print(_device.ip)
     if status == "on":
         mySocket.connect((str(_device.ip), 42425))
         mySocket.sendall(b"open_valve")
@@ -92,7 +90,7 @@ def add_device(name):
     '''
     ip = str(request.remote_addr)
     db.add_device(str(name), ip)
-    db.add_notification(name, "Device has been added")
+    db.add_notification(name, "add")
     return('PLACEHOLDER')
 
 @app.route('/notifications')
@@ -130,5 +128,6 @@ if __name__ == '__main__':  # Script executed directly?
         srvport = 80
 
     db = Database()
+    db.set_next_id()
 
     app.run(host='0.0.0.0', port=srvport)  # Launch built-in web server and run this Flask webapp

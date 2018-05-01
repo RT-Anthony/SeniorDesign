@@ -15,6 +15,7 @@ from model.MinuteData import MinuteData
 from model.HourData import HourData
 from model.DailyData import DailyData
 from model.Notification import Notification
+from model.Emailer import Emailer
 
 class Database(object):
     '''
@@ -43,6 +44,7 @@ class Database(object):
         self.session.configure(bind=self.engine)
         Base.metadata.create_all(self.engine)
         self.s = self.session()
+        self.emailer = Emailer(recipients=['anthony.bell.us@ieee.org'])
 
     #Getter functions
     def get_devices(self):
@@ -148,11 +150,23 @@ class Database(object):
             None
         '''
         try:
-            DailyData.stored_id = self.s.query(func.max(DailyData.id)) + 1
-            HourData.stored_id = self.s.query(func.max(HourData.id)) + 1
-            MinuteData.stored_id = self.s.query(func.max(MinuteData.id)) + 1
-            Device.stored_id = self.s.query(func.max(Device.id)) + 1
-            Notification.stored_id = self.s.query(func.max(Notification.id)) + 1
+            DailyData.stored_id = self.s.query(DailyData).order_by('id').all()[-1].id + 1
+        except:
+            pass
+        try:
+            HourData.stored_id = self.s.query(HourData).order_by('id').all()[-1].id + 1
+        except:
+            pass
+        try:
+            MinuteData.stored_id = self.s.query(MinuteData).order_by('id').all()[-1].id + 1
+        except:
+            pass
+        try:
+            Device.stored_id = self.s.query(Device).order_by('id').all()[-1].id + 1
+        except:
+            pass
+        try:
+            Notification.stored_id = self.s.query(Notification).order_by('id').all()[-1].id + 1
         except:
             pass
 
@@ -169,7 +183,7 @@ class Database(object):
             hourly_flow (int): total flow for the previous hour
         '''
         past_hour = datetime.datetime.now() - datetime.timedelta(hours=1)
-        minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_hour)
+        minute_entries = self.s.query(MinuteData).filter(MinuteData.device == device).filter(MinuteData.minute > past_hour)
         hourly_flow = 0
         for entry in minute_entries:
             hourly_flow += entry.flow
@@ -191,7 +205,7 @@ class Database(object):
             None
         '''
         past_day = datetime.datetime.now() - datetime.timedelta(days=1)
-        minute_entries = self.s.query(MinuteData).filter(MinuteData.minute > past_day)
+        minute_entries = self.s.query(MinuteData).filter(MinuteData.device == device).filter(MinuteData.minute > past_day)
         daily_flow = 0
         for entry in minute_entries:
             daily_flow += entry.flow
@@ -228,13 +242,16 @@ class Database(object):
             None
         '''
         if message == "burst":
-            message = "There has been a burst at " + device
-        if message == "flow":
-            message = device + " has exceeded the maximum flow allowed"
-        if message == "remove":
-            message = device + " has been removed"
-        self.s.add(Notification(device, message))
+            _message = "There has been a burst at " + device
+        elif message == "flow":
+            _message = device + " has exceeded the maximum flow allowed"
+        elif message == "remove":
+            _message = device + " has been removed"
+        elif message == "add":
+            _message = device + " has been added"
+        self.s.add(Notification(device, _message))
         self.s.commit()
+        #self.emailer.send_message(template=message, message=_message)
 
     def add_device(self, name, ip="0.0.0.0"):
         '''
@@ -247,6 +264,10 @@ class Database(object):
         Returns:
             None
         '''
+        _exists = self.s.query(Device).filter(Device.device == name).all()
+        if _exists:
+            return None
+        self.s.rollback()
         new_device = Device(name=name,ip=ip)
         self.s.add(new_device)
         self.s.commit()
