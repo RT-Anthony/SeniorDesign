@@ -1,9 +1,11 @@
 import threading
+import multiprocessing
 import time
 import os
 import RPi.GPIO as GPIO
 import socket
 import http.client
+
 
 class flow_unit(object):
     """
@@ -182,6 +184,21 @@ class flow_unit(object):
         time.sleep(timedelay)
         GPIO.output(self.open_port,0)
 
+    def socket_handler(self, connection, address):
+        try:
+            while True:
+                data = connection.recv(1024)
+                if data:
+                    if data.decode() == "open_valve":
+                        self.open_flow()
+                    elif data.decode() == "close_valve":
+                        self.close_flow()
+        except:
+            pass
+        finally:
+            connection.close()
+
+
     def init_listener(self):
         """
         Module that performs tasks related to listening for commands from main
@@ -197,19 +214,11 @@ class flow_unit(object):
         sock.bind(("0.0.0.0",self.listenport))
         sock.listen(5)
         while True:
-            (clientsock,address) = sock.accept()
-            sock.sendto("Connection accepted",(clientsock,address))
-            data = sock.recv(1024)
-            if data:
-                if data == "open_valve":
-                    self.open_flow(5)
-                    sock.sendto("valve openeded")
-                elif data == "close_valve":
-                    self.close_valve(5)
-                    sock.sendto("valve closed")
-                else:
-                    #insert error message
-                    continue
+            #clientsock,address = sock.accept()
+            clientsock,address = sock.accept()
+            process = multiprocessing.Process(target=self.socket_handler, args=(clientsock,address))
+            process.daemon = True
+            process.start()
 
 
     def init_bluetooth(self):
@@ -220,10 +229,5 @@ class flow_unit(object):
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
             if "TT_BURST" in ble_devices:
                 close_flow()
-                base_addy = self.serverip + ":" + str(self.serverport)
-                device_url = "/valves/" + self.devicename + "/off")
-                update_conn = http.client.HTTPConnection(base_addy)
-                update_conn.request('GET',device_url)
-                update_conn.close()
                 print("BURST DETECTED!!!!!!")
         #do bluetooth stuff
