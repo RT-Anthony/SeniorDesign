@@ -71,6 +71,7 @@ class flow_unit(object):
         self.serverport = port
         self.serverip = srvip
         self.devicename = dev_name
+        self.valve_closed = False
         GPIO.setup(self.open_port, GPIO.OUT) #enable output port
         GPIO.setup(self.close_port, GPIO.OUT) #enable output port
         #enable flow thread
@@ -81,8 +82,8 @@ class flow_unit(object):
         listenthread.start()
         #enable bluetooth thread, to be completed. currently disabled for
         #testing
-        #bt_thread = threading.Thread(target = self.init_bluetooth)
-        #bt_thread.start()
+        bt_thread = threading.Thread(target = self.init_bluetooth)
+        bt_thread.start()
 
     def flow_callback(self,channel):
         """
@@ -125,16 +126,17 @@ class flow_unit(object):
                     #send 0 to controller
                     self.count = 0
                     self.flow_update_controller(0)
+                    flow = 0
                 else:
                     freq = self.count/10
                     self.count = 0
                     flow = (freq+3)/8.1 #flow = lpm flow rate
+                    flow = flow/6.0
                     #return lpm to controller
                     self.flow_update_controller(flow)
+                    flow = 0
                     print("Average flow rate over 10 seconds = ", flow)
                     #TODO implement after adjustment to minute
-                    if "Shutoff" in urllib.request.urlopen(controller + device + "/" + flow).read():
-                        close_flow()
 
     def add_device_controller(self):
         """This function is used to register a device with the controller using
@@ -168,6 +170,7 @@ class flow_unit(object):
         GPIO.output(self.close_port,1)
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
+        self.valve_closed = True
 
     def open_flow(self,timedelay=5):
         """
@@ -183,6 +186,7 @@ class flow_unit(object):
         GPIO.output(self.open_port,1)
         time.sleep(timedelay)
         GPIO.output(self.open_port,0)
+        self.valve_closed = False
 
     def socket_handler(self, connection, address):
         try:
@@ -228,6 +232,8 @@ class flow_unit(object):
         while True:
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
             if "TT_BURST" in ble_devices:
-                close_flow()
+                self.close_flow()
                 print("BURST DETECTED!!!!!!")
+            else:
+                ble_devices = None
         #do bluetooth stuff
