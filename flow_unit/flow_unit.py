@@ -220,5 +220,10 @@ class flow_unit(object):
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
             if "TT_BURST" in ble_devices:
                 close_flow()
+                base_addy = self.serverip + ":" + str(self.serverport)
+                device_url = "/valves/" + self.devicename + "/off")
+                update_conn = http.client.HTTPConnection(base_addy)
+                update_conn.request('GET',device_url)
+                update_conn.close()
                 print("BURST DETECTED!!!!!!")
         #do bluetooth stuff
