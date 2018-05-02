@@ -242,3 +242,8 @@ class flow_unit(object):
             else:
                 ble_devices = None
         #do bluetooth stuff
+
+if __name__ == '__main__':
+    unit = flow_unit('test_sink','192.168.1.129')
+    while True:
+        continue
