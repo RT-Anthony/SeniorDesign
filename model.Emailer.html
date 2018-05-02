@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module model.Emailer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="model.html"><font color="#ffffff">model</font></a>.Emailer</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/tony/workspace/SeniorDesign/model/Emailer.py">/home/tony/workspace/SeniorDesign/model/Emailer.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="smtplib.html">smtplib</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="model.Emailer.html#Emailer">Emailer</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Emailer">class <strong>Emailer</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Convenience&nbsp;class&nbsp;for&nbsp;sending&nbsp;emails&nbsp;for&nbsp;system&nbsp;alerts<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Emailer-__init__"><strong>__init__</strong></a>(self, recipients=[])</dt><dd><tt>Constructor<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recipients&nbsp;(list):&nbsp;list&nbsp;of&nbsp;email&nbsp;addresses&nbsp;that&nbsp;alerts&nbsp;are&nbsp;sent&nbsp;to<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Emailer">Emailer</a>&nbsp;<a href="builtins.html#object">object</a></tt></dd></dl>
+
+<dl><dt><a name="Emailer-add_recipient"><strong>add_recipient</strong></a>(self, recipient)</dt><dd><tt>Adds&nbsp;a&nbsp;new&nbsp;email&nbsp;address&nbsp;to&nbsp;the&nbsp;email&nbsp;list<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recipient&nbsp;(str):&nbsp;email&nbsp;address&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;mail&nbsp;list<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Emailer-remove_recipient"><strong>remove_recipient</strong></a>(self, recipient)</dt><dd><tt>Removes&nbsp;an&nbsp;email&nbsp;address&nbsp;from&nbsp;the&nbsp;mail&nbsp;list<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recipient&nbsp;(str):&nbsp;email&nbsp;address&nbsp;to&nbsp;be&nbsp;removed&nbsp;from&nbsp;the&nbsp;mail&nbsp;list<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Emailer-send_message"><strong>send_message</strong></a>(self, template='burst', message='')</dt><dd><tt>Sends&nbsp;a&nbsp;message&nbsp;based&nbsp;on&nbsp;a&nbsp;specified&nbsp;template<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;template&nbsp;(str):&nbsp;specifies&nbsp;the&nbsp;type&nbsp;of&nbsp;alert&nbsp;to&nbsp;send&nbsp;output<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>email_from</strong> = 'notifications@TrickleTerminators.com'</dl>
+
+<dl><dt><strong>recipients</strong> = []</dl>
+
+<dl><dt><strong>subject_add</strong> = 'New device added'</dl>
+
+<dl><dt><strong>subject_burst</strong> = 'Pipe burst detected alert'</dl>
+
+<dl><dt><strong>subject_flow</strong> = 'Flow settings exceeded'</dl>
+
+<dl><dt><strong>subject_remove</strong> = 'Device removed'</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

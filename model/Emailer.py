@@ -63,6 +63,7 @@ class Emailer(object):
         emailer = smtplib.SMTP('smtp.gmail.com', 587)
         emailer.ehlo("TrickleTerminators")
         emailer.starttls()
+        emailer.login('TrickleTerminators@gmail.com', '1q2w3e4r!Q@W#E$R')
         #need to add authentication stuff
         if template == "burst":
             subject = self.subject_burst
