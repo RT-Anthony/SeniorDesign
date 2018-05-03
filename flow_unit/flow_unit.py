@@ -234,7 +234,7 @@ class flow_unit(object):
             if "TT_BURST" in ble_devices:
                 self.close_flow()
                 base_addy = self.serverip + ":" + str(self.serverport)
-                device_url = "/valves/" + self.devicename + "/off")
+                device_url = ("/valves/" + self.devicename + "/off")
                 update_conn = http.client.HTTPConnection(base_addy)
                 update_conn.request('GET',device_url)
                 update_conn.close()
