@@ -120,23 +120,27 @@ class flow_unit(object):
         self.add_device_controller()
         while True:
             currtime = time.time()
-            if ((currtime - lasttime) >= 10):
-                lasttime = time.time()
+            if ((currtime - lasttime) >= 2.5):
                 if self.count == 0:
                     #send 0 to controller
                     self.count = 0
                     self.flow_update_controller(0)
                     flow = 0
                 else:
-                    freq = self.count/10
+                    freq = self.count/(currtime - lasttime)
                     self.count = 0
                     flow = (freq+3)/8.1 #flow = lpm flow rate
-                    flow = flow/6.0
+                    flow = flow/24
                     #return lpm to controller
                     self.flow_update_controller(flow)
+                    #print("****")
+                    #print("Average flow rate over 1 second = ", flow)
+                    #print("Frequency: " + str(freq))
+                    #print("LPM : " + str(flow*60))
+                    #print("****")
                     flow = 0
-                    print("Average flow rate over 10 seconds = ", flow)
                     #TODO implement after adjustment to minute
+                lasttime = time.time()
 
     def add_device_controller(self):
         """This function is used to register a device with the controller using
@@ -167,6 +171,7 @@ class flow_unit(object):
             None.
 
         """
+        #if not self.valve_closed:
         GPIO.output(self.close_port,1)
         time.sleep(timedelay)
         GPIO.output(self.close_port,0)
@@ -183,6 +188,7 @@ class flow_unit(object):
             None.
 
         """
+        #if self.valve_closed:
         GPIO.output(self.open_port,1)
         time.sleep(timedelay)
         GPIO.output(self.open_port,0)
@@ -244,6 +250,6 @@ class flow_unit(object):
         #do bluetooth stuff
 
 if __name__ == '__main__':
-    unit = flow_unit('test_sink','192.168.1.129')
+    unit = flow_unit('demo_sink','192.168.1.129')
     while True:
         continue

@@ -251,7 +251,7 @@ class Database(object):
             _message = device + " has been added"
         self.s.add(Notification(device, _message))
         self.s.commit()
-        #self.emailer.send_message(template=message, message=_message)
+        self.emailer.send_message(template=message, message=_message)
 
     def add_device(self, name, ip="0.0.0.0"):
         '''
@@ -271,6 +271,7 @@ class Database(object):
         new_device = Device(name=name,ip=ip)
         self.s.add(new_device)
         self.s.commit()
+        self.add_notification(name, "add")
 
     def remove_device(self, name):
         '''

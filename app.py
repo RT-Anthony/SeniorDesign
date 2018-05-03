@@ -73,13 +73,14 @@ def update(device, flow):
     if not _device:
         db.add_device(device)
     hourly_flow = db.add_minute_data(device, flow)
-    if hourly_flow >= db.get_device(device).max_flow:
+    if hourly_flow >= db.get_device(device).max_flow and db.get_device(device).status != "off":
         db.update_device(device, status="off")
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         mySocket.connect((_device.ip, 42425))
         mySocket.sendall(b"close_valve")
         time.sleep(1)
         mySocket.close()
+        db.add_notification(device, "flow")
         return("Shutoff")
     return("Pass")
 
@@ -90,7 +91,6 @@ def add_device(name):
     '''
     ip = str(request.remote_addr)
     db.add_device(str(name), ip)
-    db.add_notification(name, "add")
     return('PLACEHOLDER')
 
 @app.route('/notifications')
