@@ -25,9 +25,13 @@ class flow_unit(object):
 
     Example:
 
-        $ <var> = flow_unit()
+        $ <var> = flow_unit(dev_name,srvip)
 
     Attributes:
+        dev_name - this variable is the string name assigned to this particular
+                flow unit. user defined, and shows up on the web GUI with this name.
+        srvip - This variable is a string with the IP address of the RPi3 which is
+                hosting the web GUI. Ex. '192.168.1.129'
         count - This variable is utilized to count the number of square waves
                 received over the flow sensor port. This is utilized to calculate
                 the frequency over a given time interval, which determines
@@ -233,7 +237,11 @@ class flow_unit(object):
 
     def init_bluetooth(self):
         """
-        To be filled in
+        This module handles the bluetooth connection to the burst detector unitself.
+        Please reference the flow_unit class for further details on how this module runs.
+
+        Returns:
+            None, this code is executed within a thread object.
         """
         while True:
             ble_devices = os.popen('timeout -s INT 2s hcitool lescan').read()
@@ -250,6 +258,14 @@ class flow_unit(object):
         #do bluetooth stuff
 
 if __name__ == '__main__':
+    """
+    This module is a test main module for use in the event this script is executed
+    without a customized main module.
+
+    Returns:
+        None, this module is a main that instanciates the flow_unit object, and
+        executes it's functions upon initialization.
+    """
     unit = flow_unit('demo_sink','192.168.1.129')
     while True:
         continue
