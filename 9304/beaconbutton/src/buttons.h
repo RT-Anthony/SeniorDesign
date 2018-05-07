@@ -71,6 +71,8 @@
  * @brief map button to GPIO
  */
 #define BUTTON_GPIO  7
+#define BUTTON_GPIO5 5
+#define BUTTON_GPIO6 6
 
 void Buttons_Init(void);
 void ButtonTask(void);
