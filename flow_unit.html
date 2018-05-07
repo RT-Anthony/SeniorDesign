@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module flow_unit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>flow_unit</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/pi/code/SeniorDesign/flow_unit/flow_unit.py">/home/pi/code/SeniorDesign/flow_unit/flow_unit.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="RPi.GPIO.html">RPi.GPIO</a><br>
+<a href="http.html">http</a><br>
+</td><td width="25%" valign=top><a href="multiprocessing.html">multiprocessing</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+<a href="threading.html">threading</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="flow_unit.html#flow_unit">flow_unit</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="flow_unit">class <strong>flow_unit</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>This&nbsp;<a href="builtins.html#object">object</a>&nbsp;handles&nbsp;the&nbsp;intialization&nbsp;of&nbsp;the&nbsp;flow&nbsp;unit,&nbsp;as<br>
+well&nbsp;as&nbsp;the&nbsp;threads&nbsp;for&nbsp;managing&nbsp;the&nbsp;device.&nbsp;It&nbsp;seeds&nbsp;three&nbsp;thread<br>
+objects&nbsp;that&nbsp;perform&nbsp;the&nbsp;following&nbsp;tasks:<br>
+&nbsp;<br>
+1-&nbsp;flow&nbsp;sensor&nbsp;thread:&nbsp;handles&nbsp;10&nbsp;second&nbsp;averages&nbsp;of&nbsp;the&nbsp;flow&nbsp;sensor<br>
+to&nbsp;calculate&nbsp;flow&nbsp;rate&nbsp;of&nbsp;water&nbsp;throught&nbsp;the&nbsp;sensorself.<br>
+&nbsp;<br>
+2-&nbsp;listener&nbsp;thread:&nbsp;listens&nbsp;for&nbsp;commands&nbsp;from&nbsp;the&nbsp;main&nbsp;controller&nbsp;on<br>
+TCP&nbsp;port&nbsp;42425.&nbsp;Sends&nbsp;command&nbsp;acknoledgment&nbsp;responses,&nbsp;as&nbsp;well&nbsp;as<br>
+connection&nbsp;accepted&nbsp;message.<br>
+&nbsp;<br>
+3-&nbsp;bluetooth&nbsp;thread:&nbsp;connects&nbsp;to&nbsp;nearest&nbsp;bluetooth&nbsp;device,&nbsp;listens<br>
+for&nbsp;keepalives,&nbsp;and&nbsp;listens&nbsp;for&nbsp;a&nbsp;water&nbsp;detected&nbsp;event.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$&nbsp;&lt;var&gt;&nbsp;=&nbsp;<a href="#flow_unit">flow_unit</a>(dev_name,srvip)<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dev_name&nbsp;-&nbsp;this&nbsp;variable&nbsp;is&nbsp;the&nbsp;string&nbsp;name&nbsp;assigned&nbsp;to&nbsp;this&nbsp;particular<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flow&nbsp;unit.&nbsp;user&nbsp;defined,&nbsp;and&nbsp;shows&nbsp;up&nbsp;on&nbsp;the&nbsp;web&nbsp;GUI&nbsp;with&nbsp;this&nbsp;name.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;srvip&nbsp;-&nbsp;This&nbsp;variable&nbsp;is&nbsp;a&nbsp;string&nbsp;with&nbsp;the&nbsp;IP&nbsp;address&nbsp;of&nbsp;the&nbsp;RPi3&nbsp;which&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hosting&nbsp;the&nbsp;web&nbsp;GUI.&nbsp;Ex.&nbsp;'192.168.1.129'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;-&nbsp;This&nbsp;variable&nbsp;is&nbsp;utilized&nbsp;to&nbsp;count&nbsp;the&nbsp;number&nbsp;of&nbsp;square&nbsp;waves<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;received&nbsp;over&nbsp;the&nbsp;flow&nbsp;sensor&nbsp;port.&nbsp;This&nbsp;is&nbsp;utilized&nbsp;to&nbsp;calculate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;frequency&nbsp;over&nbsp;a&nbsp;given&nbsp;time&nbsp;interval,&nbsp;which&nbsp;determines<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;average&nbsp;flow&nbsp;rate.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;flow_port&nbsp;-&nbsp;int&nbsp;that&nbsp;represents&nbsp;the&nbsp;BCM&nbsp;port&nbsp;number&nbsp;of&nbsp;the&nbsp;flow&nbsp;sensor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GPIO&nbsp;pin.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;open_port&nbsp;-&nbsp;int&nbsp;that&nbsp;represents&nbsp;the&nbsp;BCM&nbsp;port&nbsp;number&nbsp;for&nbsp;the&nbsp;GPIO&nbsp;output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;serves&nbsp;as&nbsp;the&nbsp;"open&nbsp;valve"&nbsp;line&nbsp;which&nbsp;controls&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;relay&nbsp;to&nbsp;open&nbsp;the&nbsp;valve.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;close_port&nbsp;-&nbsp;int&nbsp;that&nbsp;represents&nbsp;the&nbsp;BCM&nbsp;port&nbsp;number&nbsp;for&nbsp;the&nbsp;GPIO&nbsp;output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;serves&nbsp;as&nbsp;the&nbsp;"close&nbsp;valve"&nbsp;line&nbsp;which&nbsp;controls&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;relay&nbsp;to&nbsp;close&nbsp;the&nbsp;valve.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;listenport&nbsp;-&nbsp;hardcoded&nbsp;port&nbsp;number&nbsp;to&nbsp;listen&nbsp;for&nbsp;commands&nbsp;from&nbsp;the&nbsp;main<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;controller's&nbsp;commands&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;flowthread&nbsp;-&nbsp;Thread&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;handles&nbsp;the&nbsp;flow&nbsp;sensor&nbsp;calculations&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handling&nbsp;the&nbsp;counter&nbsp;resets&nbsp;based&nbsp;upon&nbsp;time.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;listenthread&nbsp;-&nbsp;Thread&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;handles&nbsp;the&nbsp;TCP&nbsp;server&nbsp;which&nbsp;listens<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;commands&nbsp;from&nbsp;the&nbsp;main&nbsp;control&nbsp;unit.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bt_thread&nbsp;-&nbsp;Thread&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;handles&nbsp;BlueTooth&nbsp;connection&nbsp;and&nbsp;listening<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;the&nbsp;burst&nbsp;detector&nbsp;unit.&nbsp;Updates&nbsp;the&nbsp;main&nbsp;unit&nbsp;with&nbsp;event<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;detections&nbsp;as&nbsp;they&nbsp;come&nbsp;in,&nbsp;and&nbsp;attempts&nbsp;to&nbsp;shut&nbsp;down&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flow&nbsp;of&nbsp;water.<br>
+&nbsp;<br>
+Todo:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Currently&nbsp;the&nbsp;Bluetooth&nbsp;thread&nbsp;needs&nbsp;to&nbsp;be&nbsp;implemented.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Add&nbsp;sections&nbsp;to&nbsp;each&nbsp;thread&nbsp;init&nbsp;function&nbsp;to&nbsp;properly&nbsp;handle&nbsp;updating<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;main&nbsp;control&nbsp;unit.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Test&nbsp;intercommunication&nbsp;between&nbsp;the&nbsp;flow&nbsp;unit&nbsp;and&nbsp;the&nbsp;main&nbsp;controller.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="flow_unit-__init__"><strong>__init__</strong></a>(self, dev_name, srvip, port=80)</dt><dd><tt>Main&nbsp;initialization&nbsp;module&nbsp;for&nbsp;<a href="#flow_unit">flow_unit</a>&nbsp;<a href="builtins.html#object">object</a>.&nbsp;See&nbsp;Docstring&nbsp;for&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-add_device_controller"><strong>add_device_controller</strong></a>(self)</dt><dd><tt>This&nbsp;function&nbsp;is&nbsp;used&nbsp;to&nbsp;register&nbsp;a&nbsp;device&nbsp;with&nbsp;the&nbsp;controller&nbsp;using<br>
+<a href="http://&lt;controller&gt;/add_device/&lt;devicename">http://&lt;controller&gt;/add_device/&lt;devicename</a>&gt;</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-close_flow"><strong>close_flow</strong></a>(self, timedelay=5)</dt><dd><tt>Module&nbsp;to&nbsp;close&nbsp;the&nbsp;flow&nbsp;valve.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timedelay&nbsp;(float):&nbsp;numerical&nbsp;value&nbsp;to&nbsp;wait&nbsp;while&nbsp;the&nbsp;valve&nbsp;is&nbsp;closed.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-flow_callback"><strong>flow_callback</strong></a>(self, channel)</dt><dd><tt>This&nbsp;module&nbsp;serves&nbsp;as&nbsp;the&nbsp;interrupt&nbsp;callback&nbsp;function&nbsp;for&nbsp;a&nbsp;detected<br>
+event&nbsp;on&nbsp;the&nbsp;flow&nbsp;sensor&nbsp;input.&nbsp;This&nbsp;function&nbsp;counts&nbsp;the&nbsp;number&nbsp;of<br>
+square&nbsp;waves&nbsp;received&nbsp;in&nbsp;order&nbsp;to&nbsp;calculate&nbsp;the&nbsp;frequency&nbsp;over&nbsp;10&nbsp;secs<br>
+in&nbsp;the&nbsp;flow&nbsp;sensor&nbsp;thread.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;channel&nbsp;(int):&nbsp;flow&nbsp;unit&nbsp;BCM&nbsp;port&nbsp;number.&nbsp;Generally&nbsp;should&nbsp;be&nbsp;handed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'self.<strong>flow_port</strong>'&nbsp;for&nbsp;ease&nbsp;of&nbsp;use.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None,&nbsp;but&nbsp;does&nbsp;modify&nbsp;parent&nbsp;<a href="builtins.html#object">object</a>'s&nbsp;count&nbsp;variable.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-flow_update_controller"><strong>flow_update_controller</strong></a>(self, average_flow)</dt><dd><tt>This&nbsp;function&nbsp;is&nbsp;used&nbsp;to&nbsp;update&nbsp;the&nbsp;main&nbsp;control&nbsp;unit&nbsp;with&nbsp;the&nbsp;average<br>
+flow&nbsp;over&nbsp;60&nbsp;seconds</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-init_bluetooth"><strong>init_bluetooth</strong></a>(self)</dt><dd><tt>This&nbsp;module&nbsp;handles&nbsp;the&nbsp;bluetooth&nbsp;connection&nbsp;to&nbsp;the&nbsp;burst&nbsp;detector&nbsp;unitself.<br>
+Please&nbsp;reference&nbsp;the&nbsp;<a href="#flow_unit">flow_unit</a>&nbsp;class&nbsp;for&nbsp;further&nbsp;details&nbsp;on&nbsp;how&nbsp;this&nbsp;module&nbsp;runs.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None,&nbsp;this&nbsp;code&nbsp;is&nbsp;executed&nbsp;within&nbsp;a&nbsp;thread&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-init_flow"><strong>init_flow</strong></a>(self)</dt><dd><tt>Module&nbsp;that&nbsp;is&nbsp;utilized&nbsp;to&nbsp;initialize&nbsp;the&nbsp;flow&nbsp;sensor.&nbsp;This&nbsp;function&nbsp;is<br>
+called&nbsp;during&nbsp;<a href="builtins.html#object">object</a>&nbsp;instanciation,&nbsp;and&nbsp;becomes&nbsp;the&nbsp;module&nbsp;that&nbsp;the&nbsp;thread<br>
+<a href="builtins.html#object">object</a>&nbsp;runs.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None.&nbsp;Module&nbsp;designed&nbsp;to&nbsp;perform&nbsp;threaded&nbsp;task&nbsp;for&nbsp;the&nbsp;flow&nbsp;sensor.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-init_listener"><strong>init_listener</strong></a>(self)</dt><dd><tt>Module&nbsp;that&nbsp;performs&nbsp;tasks&nbsp;related&nbsp;to&nbsp;listening&nbsp;for&nbsp;commands&nbsp;from&nbsp;main<br>
+control&nbsp;unit.&nbsp;This&nbsp;module&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;threaded&nbsp;moduled&nbsp;handed&nbsp;to&nbsp;the<br>
+thread&nbsp;<a href="builtins.html#object">object</a>.&nbsp;This&nbsp;is&nbsp;handled&nbsp;upon&nbsp;instanciation&nbsp;of&nbsp;the&nbsp;<a href="#flow_unit">flow_unit</a>&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None,&nbsp;this&nbsp;code&nbsp;is&nbsp;executed&nbsp;within&nbsp;a&nbsp;thread&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-open_flow"><strong>open_flow</strong></a>(self, timedelay=5)</dt><dd><tt>Module&nbsp;to&nbsp;open&nbsp;the&nbsp;flow&nbsp;valve.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timedelay&nbsp;(float):&nbsp;numerical&nbsp;value&nbsp;to&nbsp;wait&nbsp;while&nbsp;the&nbsp;valve&nbsp;is&nbsp;opened.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="flow_unit-socket_handler"><strong>socket_handler</strong></a>(self, connection, address)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
