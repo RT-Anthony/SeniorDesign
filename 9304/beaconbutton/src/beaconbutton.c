@@ -188,7 +188,7 @@ QState BcnBtnTask_Error(BcnBtnTask_t *me)
 void IRQUserHandler_GPIO(uint8_t gpio)
 {
     // If the interrupt is for the button
-    if(BUTTON_GPIO == gpio)
+    if(BUTTON_GPIO == gpio || BUTTON_GPIO5 == gpio || BUTTON_GPIO6 == gpio)
     {
         // avoid spurious interrupts.  post a wakeup only if there's no timer wakeup set
         BcnBtnTask_t* me = BcnBtnTask_Get();
@@ -285,9 +285,6 @@ void BcnBtn_GapCallback(BleGapEvent event, BleStatus status, void *parms)
  */
 void BcnBtn_ManageLED(BcnBtnTask_t *me)
 {
-    if( PushButtonDown() ){
-      (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_BURST", 8u);
-    }
     // Get the time in ms that the button has been held (0 if not pressed)
     U32 bt = GetButtonPressTime();
     // Has the button been held for >3 secs?
@@ -309,6 +306,7 @@ void BcnBtn_ManageLED(BcnBtnTask_t *me)
     // No.  Is the button pressed?
     else if(bt >0)
     {
+        (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_BURST", 8u);
         if(me->bcnBtnState)
         {
             LED_SetState(LED_GRN, LED_OFF);
@@ -380,7 +378,7 @@ QState BcnBtnRunStackEvents(BcnBtnTask_t *me) {
                 BcnBtn_StackMutexUnlock(stackMutex);
 
                 // Set the name of the peripheral.
-                (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_GOOD", 7u);
+                (void)BLEGAP_SetLocalBluetoothDeviceName((U8*)"TT_STATUS", 7u);
 
                 // Start advertising.
                 (void)BLEGAP_SetMode(BLEMODE_DISCOVERABLE | BLEMODE_CONNECTABLE);
