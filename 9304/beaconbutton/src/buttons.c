@@ -175,7 +175,7 @@ void RunButtonDownEvent(void){
 U8 PushButtonDown(void) {
    //pushbutton closes to ground.  It has a pull-up attached.
    //Thus when the button is pressed, the result is 0.
-   if (((GPIO->RegGPIODataIn.r32 >> BUTTON_GPIO) & 1) == 1)
+   if (((GPIO->RegGPIODataIn.r32 >> BUTTON_GPIO) & 1) == 1 || ((GPIO->RegGPIODataIn.r32 >> BUTTON_GPIO5) & 1) == 0 || ((GPIO->RegGPIODataIn.r32 >> BUTTON_GPIO6) & 1) == 0)
       return (FALSE );
    else
       return (TRUE );
@@ -305,17 +305,37 @@ void Buttons_Init(void) {
    GPIO_EnableInput(BUTTON_GPIO);
    GPIO_EnablePullUp(BUTTON_GPIO);
    GPIO_DisableOutput(BUTTON_GPIO);
-
+   
+   GPIO_EnableInput(BUTTON_GPIO5);
+   GPIO_EnablePullDown(BUTTON_GPIO5);
+   GPIO_DisableOutput(BUTTON_GPIO5);
+   
+   GPIO_EnableInput(BUTTON_GPIO6);
+   GPIO_EnablePullDown(BUTTON_GPIO6);
+   GPIO_DisableOutput(BUTTON_GPIO6);
    // Setup INT based on SW GPIO pulled low
    GPIO_SetPolarityFalling(BUTTON_GPIO);
 
    IRQ_Enable(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO));
    IRQ_Unmask(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO));
+   
+   IRQ_Enable(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO5));
+   IRQ_Unmask(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO5));
+   IRQ_Enable(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO6));
+   IRQ_Unmask(IRQ_GROUP_GPIO, GPIO_MASK(BUTTON_GPIO6));
 
    // // Register a wake-up action.
    PML_ConfigWakeUpByGpio(BUTTON_GPIO, false, true);
    PML_RegisterWakeUpAction(PML_WAKEUP_ACTION_RUN_HF_XTAL,
         SET_BOOT_ACTION_FLAGS_GPIO(GPIO_MASK(BUTTON_GPIO)), true);
+   
+   PML_ConfigWakeUpByGpio(BUTTON_GPIO5, false, true);
+   PML_RegisterWakeUpAction(PML_WAKEUP_ACTION_RUN_HF_XTAL,
+        SET_BOOT_ACTION_FLAGS_GPIO(GPIO_MASK(BUTTON_GPIO5)), true);
+   
+   PML_ConfigWakeUpByGpio(BUTTON_GPIO6, false, true);
+   PML_RegisterWakeUpAction(PML_WAKEUP_ACTION_RUN_HF_XTAL,
+        SET_BOOT_ACTION_FLAGS_GPIO(GPIO_MASK(BUTTON_GPIO6)), true);
 
    // initialize module vars
    buttonDownEvent = 0;
